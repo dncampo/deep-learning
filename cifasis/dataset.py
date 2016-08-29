@@ -30,17 +30,34 @@ def parse_dataset_dir_wrapper(path, accum):
     return accum
 
 
-def read_image(path, max_width, max_height):
+def reshape_image(path, max_width, max_height):
     """
-    Returns a PIL image.
-    The image gets resized.
+    Returns a PIL image with black borders. If the image size exceed the parameters given, an exception is raised.
     :param path: image path
     :param max_width: max image width
     :param max_height: max image height
-    :return: three-dimensional numpy array
+    :return: PIL image
     """
-    im = Image.open(path).resize((max_width, max_height), 1)  # filter=1 NEAREST
-    return im
+    
+    im = Image.open(path)
+    im_width = im.size[0]
+    im_height = im.size[1]
+    if im_width > max_width or im_height > max_height:
+        raise Exception("Image size cannot exceed width or height parameters" + path)
+    if max_width % 2 or max_height % 2:
+        raise Exception("Why would anyone want to use odd sizes...?")
+        
+    if im_width % 2 != 0:
+        im_width -= 1
+    if im_height % 2 != 0:
+        im_height -= 1
+    
+    width_left =  max_width - im_width
+    height_left = max_height - im_height
+    
+    new_im = Image.new('RGB',(max_width,max_height))
+    new_im.paste(im,(int(width_left/2), int(height_left/2)))
+    return new_im
 
 
 def scan_dataset(path):
@@ -60,7 +77,7 @@ def scan_dataset(path):
     for p in path:
         im = Image.open(p)
         im_size = im.size
-        if im_size[0] > 500 or im_size[1] > 500:
+        if im_size[0] > 450 or im_size[1] > 450:
             n_big_images += 1
         else:
             mean_x += im_size[0]
@@ -74,30 +91,29 @@ def scan_dataset(path):
     mean_y /= n_images
 
     print("Max width {0} max height {1}. Mean x {2} mean y {3}".format(max_width, max_height, mean_x, mean_y))
-    print("Big images = {0}".format(n_big_images))
+    print("There are {0} images. Big images = {1}".format(n_images, n_big_images))
 
 
-def image_to_tensor(img):
+def read_dataset(path_list, max_width, max_height):
     """
-    Returns a "tensorized" version of the image. Each pixel is represented by [value, channel, x_pos, y_pos].
+    Returns a numpy matrix with the normalized dataset
     Channel values are R=0, G=1, B=2.
-    :param img: PIL image
-    :return: a vector with the tensorized version of the image
+    :param path_list: a list of strings
+    :param max_width: max image width
+    :param max_height: max image height
+    :return: a numpy matrix
     """
 
-    matrix_img = np.asarray(img)
-    matrix_shape = matrix_img.shape
-
-    vec = np.zeros(matrix_img.size * 4)
-    idx = 0
-    for row in range(matrix_shape[0]):
-        for col in range(matrix_shape[1]):
-            data = (matrix_img[row, col, 0], 0, row, col,
-                    matrix_img[row, col, 1], 1, row, col,
-                    matrix_img[row, col, 2], 2, row, col)
-            vec[idx:idx + 12] = data
-            idx += 12
-    return vec
+    n_images = len(path_list)
+    vector_len = max_width*max_height*3 # RGB 3 channels
+    dataset = np.zeros((n_images, vector_len)) 
+    
+    for i in range(n_images):
+        clamped_img = reshape_image(path_list[i], max_width, max_height)
+        dataset[i,:] = np.reshape(clamped_img, (1,vector_len))
+        
+    return dataset
+        
 
 
 
