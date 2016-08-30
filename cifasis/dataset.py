@@ -29,8 +29,14 @@ def parse_dataset_dir_wrapper(path, accum):
             parse_dataset_dir_wrapper(path + '/' + p, accum)
     return accum
 
+def read_image(path):
+    im = Image.open(path)
+    if im.mode != 'RGB':
+        return im.convert('RGB')
+    return im
 
-def reshape_image(path, max_width, max_height):
+    
+def reshape_image(im, max_width, max_height):
     """
     Returns a PIL image with black borders. If the image size exceed the parameters given, an exception is raised.
     :param path: image path
@@ -39,11 +45,8 @@ def reshape_image(path, max_width, max_height):
     :return: PIL image
     """
     
-    im = Image.open(path)
     im_width = im.size[0]
     im_height = im.size[1]
-    if im_width > max_width or im_height > max_height:
-        raise Exception("Image size cannot exceed width or height parameters" + path)
     if max_width % 2 or max_height % 2:
         raise Exception("Why would anyone want to use odd sizes...?")
         
@@ -107,11 +110,18 @@ def read_dataset(path_list, max_width, max_height):
     n_images = len(path_list)
     vector_len = max_width*max_height*3 # RGB 3 channels
     dataset = np.zeros((n_images, vector_len)) 
-    
+    print("Each image has {0} values.".format(max_width*max_height*3))
+    print("Each pixel is 64 bits so each image is {0} bits.".format(max_width*max_height*3*64))
+    print("So each image has {0:.2f} mb.".format(max_width*max_height*3.0*64/8/2**20))
+    print("The hole dataset is {0:.2f} gb.".format((max_width*max_height*3.0*64*len(path_list)/8/(2**30))))
+
     for i in range(n_images):
-        clamped_img = reshape_image(path_list[i], max_width, max_height)
-        dataset[i,:] = np.reshape(clamped_img, (1,vector_len))
-        
+        img = read_image(path_list[i])
+        if img.size[0] <= max_width and img.size[1] <= max_height:
+            clamped_img = reshape_image(img, max_width, max_height)
+            dataset[i,:] = np.reshape(clamped_img, (1,vector_len))
+    
+    print("Dataset shape: {0}".format(dataset.shape))
     return dataset
         
 
