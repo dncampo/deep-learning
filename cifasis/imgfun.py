@@ -39,7 +39,7 @@ def normalize(np_img):
 
 def quantize(np_img):
     """
-    Returns a quantized version of np_img in the range [0, 255].
+    Returns a PIL quantized version of np_img in the range [0, 255].
     :param np img: numpy matrix
     """
     
