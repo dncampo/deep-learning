@@ -59,6 +59,7 @@ def main():
     print(map_sentence("this is a test sentence test test",dict(this=1, test=455, mouse=4)))    
     
     top1000words = map(lambda x: map_sentence(x,dict(word_count[0:1000])), sentences)
+    top1000words = filter(lambda x: sum(x)!=0, top1000words)
     low1000words = map(lambda x: map_sentence(x,dict(word_count[0:-1000])), sentences)
     
     max_top1000 = 0
@@ -69,9 +70,10 @@ def main():
     top1000array = map (lambda x: np.hstack((x, [0]*(max_top1000-len(x)))), top1000words)
     top1000array = np.array(top1000array)
     pca_top1000 = PCA(top1000array)
+    print(pca_top1000)
     
-    low1000vec = map (lambda x: np.hstack((x, [0]*(max_top1000-len(x)))), low1000words)
-    pca_low1000 = PCA(np.array(low1000vec))
+    #low1000vec = map (lambda x: np.hstack((x, [0]*(max_top1000-len(x)))), low1000words)
+    #pca_low1000 = PCA(np.array(low1000vec))
     
 
 if __name__ == "__main__":
