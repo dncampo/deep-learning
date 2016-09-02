@@ -1,6 +1,8 @@
 import numpy as np
 from PIL import Image
 import os
+import re
+import operator
 
 
 def parse_dataset_dir(path):
@@ -65,7 +67,7 @@ def reshape_image(im, max_width, max_height):
 
 def scan_dataset(path):
     """
-    This function returns None. Just print relevant information about the dataset
+    This function returns None. Just prints relevant information about the dataset
     :param path: a list of strings
     :return: None
     """
@@ -109,11 +111,15 @@ def read_dataset(path_list, max_width, max_height):
 
     n_images = len(path_list)
     vector_len = max_width*max_height*3 # RGB 3 channels
-    dataset = np.zeros((n_images, vector_len)) 
     print("Each image has {0} values.".format(max_width*max_height*3))
     print("Each pixel is 64 bits so each image is {0} bits.".format(max_width*max_height*3*64))
     print("So each image has {0:.2f} mb.".format(max_width*max_height*3.0*64/8/2**20))
     print("The hole dataset is {0:.2f} gb.".format((max_width*max_height*3.0*64*len(path_list)/8/(2**30))))
+    try:    
+        dataset = np.zeros((n_images, vector_len)) 
+    except MemoryError:
+        print("ERROR: The array does not fit in memory")
+        raise
 
     for i in range(n_images):
         img = read_image(path_list[i])
@@ -123,7 +129,54 @@ def read_dataset(path_list, max_width, max_height):
     
     print("Dataset shape: {0}".format(dataset.shape))
     return dataset
+    
+def get_nietszche_word_count(path):
+    """
+    Returns a sorted list of tuples (string, int).
+    :param path: text file path
+    """
+    sentences = sentences_nietzsche_dataset(path)
+    words = map(lambda x: x.split(), sentences)
+    words = map(lambda x: (x, 1), [item for sublist in words for item in sublist])
+    
+    d = dict()
+    
+    for t in words:
+        if t[0] in d:
+            d[t[0]] += 1
+        else:
+            d[t[0]] = 1
+    
+    return sorted(d.items(), key=operator.itemgetter(1), reverse=True)
+
         
+def sentences_nietzsche_dataset(path):
+    """
+    Returns a vector of strings. Each string is a sentence.
+    :param path: text file path
+    """
+    
+    f = open(path,'r')
+    s = f.read()
+    sentences = s.replace("\n"," ").replace("...",".").split(".")
+    sentences = map(lambda x: re.sub( '\s+', ' ', x).strip(), sentences)
+    sentences = map(lambda x: x.lower(), sentences)
+    sentences = map(lambda x: re.sub('([^0-9a-zA-Z\s]+)', '', x), sentences)
 
-
-
+    return sentences  
+    
+def map_sentence(sentence, word_count):
+    """
+    Returns a vector of integers, one for each word.
+    :param sentence: a string
+    :param word_count: a dict string to int    
+    """
+    i=0
+    freq = np.zeros(len(sentence.split()), dtype=int)
+    
+    for w in sentence.split():
+        freq[i] = word_count.get(w,0)
+        i+=1
+    
+    return freq
+    

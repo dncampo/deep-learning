@@ -90,3 +90,14 @@ ENV/
 
 # pycharm proyect
 .idea
+
+# tex
+**/*.aux
+**/*.log
+**/*.synctex.gz
+**/*-blx.bib
+**/*.bbl
+**/*.bcf
+**/*.blg
+**/*.xml
+**/*.out
