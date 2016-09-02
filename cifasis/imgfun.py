@@ -53,11 +53,4 @@ def quantize(np_img):
     quantized_img = f(np_img)
     img =  Image.fromarray(quantized_img,"L")
 
-<<<<<<< HEAD
     return img
-=======
-    return img
-    
-    
-    
->>>>>>> b77953a93badadc76d4cab31901621e554222372
