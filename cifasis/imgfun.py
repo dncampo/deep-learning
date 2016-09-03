@@ -1,6 +1,7 @@
 import random as rnd
 import numpy as np
 from PIL import Image
+from matplotlib import pyplot as plt
 
 def extract_window(img, window_size=None):
     """
@@ -54,3 +55,37 @@ def quantize(np_img):
     img =  Image.fromarray(quantized_img,"L")
 
     return img
+
+def plot_hist(hist_list, filename=None):
+    """
+    Plots a histogram given hist_list. The argument is a list of integers.
+    If title is given, the plot figure is saved.
+    :param hist_list: a list of pixel counts.
+    :param filename: 
+    """
+    N = len(hist_list)
+    if N == 256:    
+        x = range(N-1)
+        plt.bar(x,hist_list)
+        if filename is not None:
+            plt.savefig(filename+".jpg", dpi=300)
+        plt.show()
+    else:
+        x = range(255)
+        plt.figure(figsize=(10,2))
+        plt.subplot(131)
+        plt.bar(x,hist_list[0:255])
+        plt.xlim([0,255])
+        plt.title("Red")
+        plt.subplot(132)
+        plt.bar(x,hist_list[256:512-1])
+        plt.xlim([0,255])
+        plt.title("Green")
+        plt.subplot(133)
+        plt.bar(x,hist_list[512:768-1])
+        plt.xlim([0,255])
+        plt.title("Blue")
+        if filename is not None:
+            plt.savefig(filename+".jpg", dpi=300)
+        plt.show()
+    
