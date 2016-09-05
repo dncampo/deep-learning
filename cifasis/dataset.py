@@ -130,12 +130,32 @@ def read_dataset(path_list, max_width, max_height):
     print("Dataset shape: {0}".format(dataset.shape))
     return dataset
     
-def get_nietszche_word_count(path):
+## Nietzsche
+def get_sentences(path):
+    """
+    Returns a vector of strings. Each string is a sentence.
+    :param path: text file path
+    """ 
+    f = open(path,'r')
+    strings = f.read()
+    #special case
+    strings = strings.replace("...",".")
+    #remove multiple white spaces and new lines OR
+    strings = re.sub('(\s+|--|=)', ' ', strings)
+    #any non alphabet character excluding dots, spaces and apostrophes
+    strings = re.sub('[^a-zA-Z.\' ]', '', strings)
+    #split sentences
+    sentences = strings.split('.')
+    #to lower
+    sentences = map(lambda x: x.lower(), sentences)
+    return sentences
+    
+def count_words_frequency(path):
     """
     Returns a sorted list of tuples (string, int).
     :param path: text file path
     """
-    sentences = sentences_nietzsche_dataset(path)
+    sentences = get_sentences(path)
     words = map(lambda x: x.split(), sentences)
     words = map(lambda x: (x, 1), [item for sublist in words for item in sublist])
     
@@ -150,20 +170,7 @@ def get_nietszche_word_count(path):
     return sorted(d.items(), key=operator.itemgetter(1), reverse=True)
 
         
-def sentences_nietzsche_dataset(path):
-    """
-    Returns a vector of strings. Each string is a sentence.
-    :param path: text file path
-    """
-    
-    f = open(path,'r')
-    s = f.read()
-    sentences = s.replace("\n"," ").replace("...",".").split(".")
-    sentences = map(lambda x: re.sub( '\s+', ' ', x).strip(), sentences)
-    sentences = map(lambda x: x.lower(), sentences)
-    sentences = map(lambda x: re.sub('([^0-9a-zA-Z\s]+)', '', x), sentences)
 
-    return sentences  
     
 def map_sentence(sentence, word_count):
     """

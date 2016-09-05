@@ -15,53 +15,54 @@ def main():
     #dataset = read_dataset(path_images, width, height)
 
 
-    ## exercise 2
-    test_img =  read_image(path_images[12])
-    test_img.save('image.jpg')
-    plot_hist(test_img.histogram(),"image_histogram")
+#    ## exercise 2
+#    test_img =  read_image(path_images[12])
+#    test_img.save('image.jpg')
+#    plot_hist(test_img.histogram(),"image_histogram")
+#    
+#    rr, gg, bb = test_img.split()
+#    
+#    norm_rr = Image.fromarray(normalize(np.array(rr)), 'L')
+#    norm_gg = Image.fromarray(normalize(np.array(gg)), 'L')
+#    norm_bb = Image.fromarray(normalize(np.array(bb)), 'L')
+#    
+#    norm_img = Image.merge("RGB", (norm_rr, norm_gg, norm_bb))
+#    norm_img.save('normalized_image.jpg')
+#    
+#    quan_rr = quantize(normalize(np.array(rr)))
+#    quan_gg = quantize(normalize(np.array(gg)))
+#    quan_bb = quantize(normalize(np.array(bb)))
+#
+#    quan_img = Image.merge("RGB", (quan_rr, quan_gg, quan_bb))
+#    quan_img.save('quantized_image.jpg')
+#    plot_hist(quan_img.histogram(),"quantized_image_histogram")
     
-    rr, gg, bb = test_img.split()
-    
-    norm_rr = Image.fromarray(normalize(np.array(rr)), 'L')
-    norm_gg = Image.fromarray(normalize(np.array(gg)), 'L')
-    norm_bb = Image.fromarray(normalize(np.array(bb)), 'L')
-    
-    norm_img = Image.merge("RGB", (norm_rr, norm_gg, norm_bb))
-    norm_img.save('normalized_image.jpg')
-    
-    quan_rr = quantize(normalize(np.array(rr)))
-    quan_gg = quantize(normalize(np.array(gg)))
-    quan_bb = quantize(normalize(np.array(bb)))
-
-    quan_img = Image.merge("RGB", (quan_rr, quan_gg, quan_bb))
-    quan_img.save('quantized_image.jpg')
-    plot_hist(quan_img.histogram(),"quantized_image_histogram")
-    
-    ## exercise 4
-    width = 500
-    height = 300
-    path_images = parse_dataset_dir('/home/lpineda/deep-learning-course/test/words')
-    #dataset = read_dataset(path_images, width, height)
-    
-    test_img =  read_image(path_images[19])
-    test_img.save('words_image.jpg')
-    plot_hist(test_img.histogram(),"words_image_histogram")
-
-    
-    rr, gg, bb = test_img.split()
-    
-    quan_rr = quantize(normalize(np.array(rr)))
-    quan_gg = quantize(normalize(np.array(gg)))
-    quan_bb = quantize(normalize(np.array(bb)))
-
-    quan_img = Image.merge("RGB", (quan_rr, quan_gg, quan_bb))
-    quan_img.save('words_quantized_image.jpg')
-    plot_hist(quan_img.histogram(),"words_quantized_image_histogram")
+#    ## exercise 4
+#    width = 500
+#    height = 300
+#    path_images = parse_dataset_dir('/home/lpineda/deep-learning-course/test/words')
+#    #dataset = read_dataset(path_images, width, height)
+#    
+#    test_img =  read_image(path_images[19])
+#    test_img.save('words_image.jpg')
+#    plot_hist(test_img.histogram(),"words_image_histogram")
+#
+#    
+#    rr, gg, bb = test_img.split()
+#    
+#    quan_rr = quantize(normalize(np.array(rr)))
+#    quan_gg = quantize(normalize(np.array(gg)))
+#    quan_bb = quantize(normalize(np.array(bb)))
+#
+#    quan_img = Image.merge("RGB", (quan_rr, quan_gg, quan_bb))
+#    quan_img.save('words_quantized_image.jpg')
+#    plot_hist(quan_img.histogram(),"words_quantized_image_histogram")
 
     
     ## exercise 5
-#    word_count = get_nietszche_word_count("/home/lpineda/deep-learning/tp1/nietzsche.txt")
-#    sentences = sentences_nietzsche_dataset("/home/lpineda/deep-learning/tp1/nietzsche.txt")
+    print(get_sentences("/home/lpineda/deep-learning/tp1/nietzsche.txt"))
+    #word_count = count_words_frequency("/home/lpineda/deep-learning/tp1/nietzsche.txt")
+    #sentences = sentences_nietzsche_dataset("/home/lpineda/deep-learning/tp1/nietzsche.txt")
 #
 #    print(map_sentence("this is a test sentence test test",dict(this=1, test=455, mouse=4)))    
 #    
