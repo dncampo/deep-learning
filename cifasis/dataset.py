@@ -146,44 +146,53 @@ def get_sentences(path):
     strings = re.sub('[^a-zA-Z.\' ]', '', strings)
     #split sentences
     sentences = strings.split('.')
-    #to lower
-    sentences = map(lambda x: x.lower(), sentences)
+    #remove leading and trailing spaces and to lower
+    sentences = map(lambda x: x.lower().strip(), sentences)
+    #filter any empty character    
+    sentences = filter(lambda x: len(x)!=0, sentences)
     return sentences
     
-def count_words_frequency(path):
+def split_sentences(list_sentences):
     """
-    Returns a sorted list of tuples (string, int).
-    :param path: text file path
+    Split the strings in list_sentences and returns a flattended list of strings.
+    :param list_sentences: a list of sentences
     """
-    sentences = get_sentences(path)
-    words = map(lambda x: x.split(), sentences)
-    words = map(lambda x: (x, 1), [item for sublist in words for item in sublist])
     
-    d = dict()
+    #split each sentence in a list of words
+    words = map(lambda x: x.split(), list_sentences)
+    #return a flattened list
+    return [a_word for a_sentence in words for a_word in a_sentence]
     
-    for t in words:
-        if t[0] in d:
-            d[t[0]] += 1
+def count_words_frequency(list_words):
+    """
+    Returns a list of strings. This list is sorted by the requency of 
+    occurrence of each word in list_words.
+    :param list_words: a list of words
+    """
+    
+    word_count = {}
+    for word in list_words:
+        if word not in word_count:
+            word_count[word] = 1
         else:
-            d[t[0]] = 1
+            word_count[word] += 1
     
-    return sorted(d.items(), key=operator.itemgetter(1), reverse=True)
+    sorted_list = sorted(word_count.items(), key=lambda value: value[1], reverse=True)
+    return sorted_list
 
-        
 
-    
-def map_sentence(sentence, word_count):
+def map_sentence(sentence, list_words):
     """
-    Returns a vector of integers, one for each word.
+    Returns a vector of integers, one for each word in list_words. Each integer
+    is the number of times that each word of sentence appear in list_words.
     :param sentence: a string
-    :param word_count: a dict string to int    
+    :param list_words: a list of strings
     """
-    i=0
-    freq = np.zeros(len(sentence.split()), dtype=int)
+
+    freq = np.zeros(len(list_words), dtype=int)
     
-    for w in sentence.split():
-        freq[i] = word_count.get(w,0)
-        i+=1
+    for i in range(list_words):
+        freq[i] = len(filter(lambda x: x == list_words[i], sentence))
     
     return freq
     
