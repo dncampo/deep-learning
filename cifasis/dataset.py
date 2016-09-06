@@ -141,7 +141,7 @@ def get_sentences(path):
     #special case
     strings = strings.replace("...",".")
     #remove multiple white spaces and new lines OR
-    strings = re.sub('(\s+|--|=)', ' ', strings)
+    strings = re.sub('(\s+|-|=|")', ' ', strings)
     #any non alphabet character excluding dots, spaces and apostrophes
     strings = re.sub('[^a-zA-Z.\' ]', '', strings)
     #split sentences
@@ -177,22 +177,32 @@ def count_words_frequency(list_words):
         else:
             word_count[word] += 1
     
-    sorted_list = sorted(word_count.items(), key=lambda value: value[1], reverse=True)
-    return sorted_list
+    sorted_list = sorted(word_count.items(), key=operator.itemgetter(1), reverse=True)
+    sorted_keys = map(lambda x: x[0], sorted_list)
+    return sorted_keys
 
 
-def map_sentence(sentence, list_words):
+def map_frequency(sentence, list_words, inverse=False):
     """
     Returns a vector of integers, one for each word in list_words. Each integer
     is the number of times that each word of sentence appear in list_words.
     :param sentence: a string
     :param list_words: a list of strings
     """
-
-    freq = np.zeros(len(list_words), dtype=int)
     
-    for i in range(list_words):
-        freq[i] = len(filter(lambda x: x == list_words[i], sentence))
+    words = sentence.split()
     
+    n_words = len(list_words)
+    freq = np.zeros(n_words, dtype=float)
+    
+    if inverse==True:
+        #for each word in list_words
+        for i in range(n_words):
+            #count how many time that word appears in the sentence
+            f = sum(1 for x in words if x == list_words[i])
+            freq[i] = f if f==0 else 1.0/f
+    else:
+        for i in range(n_words):
+            freq[i] = sum(1 for x in words if x == list_words[i])
     return freq
     
