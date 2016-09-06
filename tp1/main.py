@@ -4,7 +4,8 @@ sys.path.append("..")
 from cifasis.dataset import *
 from cifasis.imgfun import *
 
-from matplotlib.mlab import PCA
+from sklearn import decomposition
+import pylab as pl
 
 def main():
     width = 500
@@ -67,17 +68,23 @@ def main():
     word_count_sorted = count_words_frequency(words)
     print("There are {0} different words".format(len(word_count_sorted)))
         
-    top1000words_vectors = map(lambda x: map_frequency(x, word_count_sorted[0:100]), sentences)
-    
-    pca_top1000words = PCA(np.array(top1000words_vectors))
+    top1000words_vectors = map(lambda x: map_frequency(x, word_count_sorted[0:1000]), sentences)
+    pca_top1000words = decomposition.PCA(n_components=2)
+    pca_top1000words.fit(np.array(top1000words_vectors))
+    X_top = pca_top1000words.transform(np.array(top1000words_vectors))
+    pl.figure(1)
+    pl.scatter(X_top[:, 0], X_top[:, 1])
+    pl.savefig('pca_top_freq.svg', format='svg', dpi=1200)
+    print("There are {0} top frequency PCA points.".format(len(X_top[:, 0])))
 
-    print pca_top1000words
-    #print(pca_top1000words)
-    #low1000words_vectors = map(lambda x: map_frequency(x, word_count_sorted[-1000:], inverse=True), sentences)
-
-    #print low1000words_vectors
-    #low1000vec = map (lambda x: np.hstack((x, [0]*(max_top1000-len(x)))), low1000words)
-    #pca_low1000 = PCA(np.array(low1000vec))
+    low1000words_vectors = map(lambda x: map_frequency(x, word_count_sorted[-1000:], inverse=True), sentences)
+    pca_low1000words = decomposition.PCA(n_components=2)
+    pca_low1000words.fit(np.array(top1000words_vectors))
+    X_low = pca_low1000words.transform(np.array(low1000words_vectors))
+    pl.figure(2)
+    pl.scatter(X_low[:, 0], X_low[:, 1])
+    pl.savefig('pca_low_freq.svg', format='svg', dpi=1200)
+    print("There are {0} low frequency PCA points.".format(len(X_low[:, 0])))
     
 
 if __name__ == "__main__":
