@@ -1,0 +1,32 @@
+import theano
+import numpy as np
+from logRegression import logRegression
+rng = np.random
+
+# TP2.1.a: 
+a = theano.tensor.vector() 
+out = a + a ** 10          
+f = theano.function([a], out)
+print(f([0, 1, 2]))
+
+# a ** 2 + b ** 2 + 2 * a * b.
+b = theano.tensor.vector() 
+out = a**2 + b**2 + 2* a * b          
+g = theano.function([a,b], out)
+print(g([0, 1, 2],[0, 2, 3]))
+
+
+# generate a dataset: D = (input_values, target_class)
+N = 400               
+feats = 784           
+D = (rng.randn(N, feats), rng.randint(size=N, low=0, high=2))
+nsteps = 100
+D[0].shape
+D[1].shape
+#logRegression(D,nsteps,'batch')
+
+
+
+
+
+# agregar pruebas con train/test
