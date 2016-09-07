@@ -26,13 +26,11 @@ N = 400
 feats = 784           
 D = (rng.randn(N, feats), rng.randint(size=N, low=0, high=2))
 nsteps = 100
-D[0].shape
-D[1].shape
-logRegression(D,param=nsteps,'batch')
+logRegression(D,params=nsteps,trainMode='batch')
 
 #i.procesar los datos por lotes (mini­batches)
 errorDiff=0.05 # la condición de parada es la diferencia en el error de entrenamiento.
-logRegression(D,param=errorDiff,'minibatch')
+logRegression(D,params=[errorDiff,10],trainMode='minibatch')
 
 
 #ii. utilizar como dataset Caltech101 (airplanes vs motorbikes) rescaleado a 28x28 pxl. 

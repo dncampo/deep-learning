@@ -17,6 +17,7 @@ def logRegression(traindata,params,trainMode):
     p_1 = 1 / (1 + T.exp(-T.dot(x, w) - b))   
     prediction = p_1 > 0.5                    
     xent = -y * T.log(p_1) - (1-y) * T.log(1-p_1) # Cross-entropy
+    # Revisar aca si uso la xent o acc como medida! TODO
     cost = xent.mean() + 0.01 * (w ** 2).sum()
     gw, gb = T.grad(cost, [w, b])             
     # Compile
@@ -33,11 +34,17 @@ def logRegression(traindata,params,trainMode):
             pred_train, err = train(traindata[0], traindata[1])
    
     if trainMode=='minibatch':
-        errordif=params
+        errordif=params[0]
+        batchsize=params[1]
         e=1
+        err_old=1
         while e>errordif:
-            # tomar N ejemplos al azar
-            pred_train, err = train(traindata[0], traindata[1])
+            # tomar ejemplos al azar
+            batchind=rng.randint(0,len(traindata[0]),batchsize)
+            batchx=[traindata[0][i] for i in batchind]
+            batchy=[traindata[1][i] for i in batchind]
+            pred_train, err = train(batchx, batchy)
+            e=np.abs((err-err_old)/err_old)
 
         
     # Test
