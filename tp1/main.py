@@ -77,7 +77,7 @@ def main():
     X_top = pca_top1000words.transform(np.array(top1000words_vectors))
     pl.figure(1)
     pl.scatter(X_top[:, 0], X_top[:, 1])
-    pl.savefig('pca_top_freq.svg', format='svg', dpi=1200)
+    pl.savefig('pca_top_freq.jpg', format='jpg', dpi=1200)
 
     #Distant points
     top_mean = (X_top[:,0].mean(), X_top[:,1].mean())
@@ -85,7 +85,7 @@ def main():
     #rare observations
     rare_sentences = []
     for i in range(n_sentences):
-        if LA.norm(top_mean-X_top[i,:]) > 25:
+        if LA.norm(top_mean - X_top[i,:]) > 25:
             rare_sentences.append(sentences[i])
             
     print("{0} rare sentences with top frequency characteristics have been found".format(len(rare_sentences)))
@@ -102,7 +102,7 @@ def main():
     X_low = pca_low1000words.transform(np.array(low1000words_vectors))
     pl.figure(2)
     pl.scatter(X_low[:, 0], X_low[:, 1])
-    pl.savefig('pca_low_freq.svg', format='svg', dpi=1200)
+    pl.savefig('pca_low_freq.jpg', format='jpg', dpi=1200)
     
     #Distant points
     low_mean = (X_low[:,0].mean(), X_low[:,1].mean())

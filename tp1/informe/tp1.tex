@@ -162,5 +162,22 @@ Al analizar los histogramas, vemos que los picos con la mayor concentración de 
 	\label{hist_quantized_word}
 \end{figure}
 
+\subsection*{Ejercicio 6}
+El texto es separado en oraciones, y cada oración es transformada a un vector de números. Dado el vector de ocurrencia de las palabras del texto completo ordenado por frecuencia, la transformación mapea a cada oración un vector donde se cuentan las apariciones de cada palabra más frecuente en dicha oración. Luego, se reduce la dimensionalidad de los datos utilizando PCA.
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.8\textwidth]{../pca_top_freq}
+	\caption{Scatter PCA vector de mayores frecuencias.}
+	\label{pca_top}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.8\textwidth]{../pca_low_freq}
+	\caption{Scatter PCA vector de inversas de menores frecuencias.}
+	\label{pca_low}
+\end{figure}
+
+Se pueden observa puntos distantes en ambas distribuciones. Se separaran las sentencias correspondientes a estos puntos en los archivos de texto \textit{rare\_top.txt} y \textit{rare\_low.txt}.
 \end{document}
