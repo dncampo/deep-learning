@@ -10,14 +10,14 @@ rng = np.random
 a = theano.tensor.vector() 
 out = a + a ** 10          
 f = theano.function([a], out)
-print(f([0, 1, 2]))
+#print(f([0, 1, 2]))
 
 # Modify and execute this code to compute this expression: 
 # a ** 2 + b ** 2 + 2 * a * b.
 b = theano.tensor.vector() 
 out = a**2 + b**2 + 2* a * b          
 g = theano.function([a,b], out)
-print(g([0, 1, 2],[0, 2, 3]))
+#print(g([0, 1, 2],[0, 2, 3]))
 
 # TP2.1.b:
 # Modifique​este ejemplo de regresión logística​ para: 
@@ -25,12 +25,12 @@ print(g([0, 1, 2],[0, 2, 3]))
 N = 400               
 feats = 784           
 D = (rng.randn(N, feats), rng.randint(size=N, low=0, high=2))
-nsteps = 100
+nsteps = 300
 logRegression(D,params=nsteps,trainMode='batch')
 
 #i.procesar los datos por lotes (mini­batches)
 errorDiff=0.05 # la condición de parada es la diferencia en el error de entrenamiento.
-logRegression(D,params=[errorDiff,10],trainMode='minibatch')
+#logRegression(D,params=[errorDiff,10],trainMode='minibatch')
 
 
 #ii. utilizar como dataset Caltech101 (airplanes vs motorbikes) rescaleado a 28x28 pxl. 
