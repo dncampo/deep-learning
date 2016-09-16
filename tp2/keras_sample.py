@@ -23,3 +23,4 @@ testlabels=np.random.randint(2,size=(1000,1))
 
 print model.evaluate(test_data,test_labels,nb_epoch=10,batchsize=32)
 predictions = model.predict(test_data)
+

@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import numpy as np
 import theano
 import theano.tensor as T
@@ -30,24 +32,30 @@ def logRegression(traindata,params,trainMode):
     # Train
     if trainMode=='batch':
         training_steps=params
-        for i in range(training_steps):
+        for step in range(training_steps):
             pred_train, err = train(traindata[0], traindata[1])
-            if i % 10 == 0:
-                print 'Step %d: xent: %.03f, train acc: %.03f %%' %(i,err.mean(),accuracy(traindata[1],predict(traindata[0])))
+            if step % 10 == 0:
+                print 'Step %d: xent: %.03f, train acc: %.03f %%' %(step,err.mean(),accuracy(traindata[1],predict(traindata[0])))
  
     if trainMode=='minibatch':
         errordif=params[0]
         batchsize=params[1]
         e=1
         err_old=1
+        step=0
         while e>errordif:
             # tomar ejemplos al azar
             batchind=rng.randint(0,len(traindata[0]),batchsize)
             batchx=[traindata[0][i] for i in batchind]
             batchy=[traindata[1][i] for i in batchind]
+            if 'err' in locals():
+                err_old=err.mean()
             pred_train, err = train(batchx, batchy)
-            e=np.abs((err-err_old)/err_old)
-
+            # Tomo la xent como condición de stop
+            e=np.abs((err.mean()-err_old)/err_old)
+            if step % 10 == 0:
+                print 'Step %d: xent: %.03f, ediff: %.03f, train acc: %.03f %%' %(step,err.mean(),e,accuracy(batchy,predict(batchx)))
+            step+=1
         
     # Test
     # pred, err = test(Dtest)

@@ -26,14 +26,21 @@ N = 400
 feats = 784           
 D = (rng.randn(N, feats), rng.randint(size=N, low=0, high=2))
 nsteps = 300
+print 'Batch training:'
 logRegression(D,params=nsteps,trainMode='batch')
 
 #i.procesar los datos por lotes (mini­batches)
-errorDiff=0.05 # la condición de parada es la diferencia en el error de entrenamiento.
-#logRegression(D,params=[errorDiff,10],trainMode='minibatch')
-
+errorDiff=0.01 # la condición de parada es la diferencia en el error de entrenamiento.
+print 'Minibatch training:'
+logRegression(D,params=[errorDiff,10],trainMode='minibatch')
 
 #ii. utilizar como dataset Caltech101 (airplanes vs motorbikes) rescaleado a 28x28 pxl. 
+
+dataDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/caltech/'
+D=loadPlanesvsBikes(dataDir)
+
+
+
 #iii. Agregar al modelo una capa de 100 neuronas ocultas con activación ReLU. 
 
 
