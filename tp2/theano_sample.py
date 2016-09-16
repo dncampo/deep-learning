@@ -3,6 +3,7 @@
 import theano
 import numpy as np
 from logRegression import logRegression
+from loadPlanesvsBikes import loadPlanesvsBikes
 rng = np.random
 
 # TP2.1.a: 
@@ -36,8 +37,11 @@ logRegression(D,params=[errorDiff,10],trainMode='minibatch')
 
 #ii. utilizar como dataset Caltech101 (airplanes vs motorbikes) rescaleado a 28x28 pxl. 
 
-dataDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/caltech/'
+#dataDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/caltech/'
+dataDir='/home/tc9/Descargas/101_ObjectCategories/'
 D=loadPlanesvsBikes(dataDir)
+print 'Airplanes vs Motorbikes:'
+logRegression(D,params=[errorDiff,10],trainMode='minibatch')
 
 
 
