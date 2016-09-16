@@ -1,3 +1,8 @@
+import sys
+sys.path.append("..")
+
+from cifasis.dataset import *
+
 import numpy
 import theano
 import theano.tensor as T
@@ -49,6 +54,7 @@ predict = theano.function(inputs=[x], outputs=prediction)
 # Train
 for i in range(training_steps):
     pred, err = train(D[0], D[1])
+    print("Error {0}".format(err.sum()))
 
 print("Final model:")
 print(w.get_value())

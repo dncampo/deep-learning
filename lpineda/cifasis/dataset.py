@@ -205,4 +205,17 @@ def map_frequency(sentence, list_words, inverse=False):
         for i in range(n_words):
             freq[i] = sum(1 for x in words if x == list_words[i])
     return freq
-    
+   
+def get_mini_batches(data, size=256):
+    """
+    Returns a list of mini batches. Data examples must be larger than size
+    :param data: the dataset
+    :param size: the mini batch size
+    """
+    if len(data) < size:
+	raise Exception("More examples are needed")
+
+    n_batches = int(len(data)/size)
+    for i in range(n_batches-1):
+        yield data[i*n_batches:(i+1)*n_batches]
+	
