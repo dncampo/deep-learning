@@ -32,6 +32,9 @@ def logRegression(traindata,params,trainMode):
         training_steps=params
         for i in range(training_steps):
             pred_train, err = train(traindata[0], traindata[1])
+            print(pred_train)
+            print(err)
+            
    
     if trainMode=='minibatch':
         errordif=params[0]
