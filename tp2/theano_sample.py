@@ -42,6 +42,7 @@ if ej=='bi':
 
 #ii. utilizar como dataset Caltech101 (airplanes vs motorbikes) rescaleado a 28x28 pxl. 
 if ej=='bii':
+    errorDiff=0.01
     dataDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/caltech/'
     #dataDir='/home/tc9/Descargas/101_ObjectCategories/'
     D=loadPlanesvsBikes(dataDir)

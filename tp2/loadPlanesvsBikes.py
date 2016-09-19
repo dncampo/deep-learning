@@ -22,5 +22,6 @@ def loadPlanesvsBikes(dataDir):
             dataset=np.concatenate((dataset,dataset1),axis=0)
         except:
             dataset=dataset1
-            
+    print("dataset size:")
+    print(dataset.shape)
     return dataset
