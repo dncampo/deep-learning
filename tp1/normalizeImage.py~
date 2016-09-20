@@ -1,9 +1,0 @@
-import numpy as np
-
-def normalizeImage(im):
-    '''zscore normalization'''
-    for c in [0,1,2]:
-        im[:,:,c]=im[:,:,c]-np.mean(im[:,:,c])
-        im[:,:,c]=im[:,:,c]/np.std(im[:,:,c])
-        
-    return im

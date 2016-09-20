@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from loadImages import loadImages
 from scaleRange import scaleRange
 from getPatches import getPatches
-# borrar: cosas para sacar cuando este listo para presentar
 
 dataDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/deep-learning-course/test/words/'
 imFiles=[]
@@ -15,16 +14,16 @@ for d in os.walk(dataDir):
         if ".directory" not in f:
             imFiles.append(d[0]+"/"+f)
 
-# Para evaluar las características del dataset:
-# datasizes=np.zeros((len(imFiles),3))
-# for (k,f) in enumerate(imFiles):
-#     im=misc.imread(f)
-#     datasizes[k,:]=(im.shape[0],im.shape[1],im.ndim)    
-# imdata=pandas.DataFrame(datasizes)
-# fig = plt.figure()
-# fig.patch.set_facecolor('white')
-# imdata.boxplot()
-# plt.show()
+#Para evaluar las características del dataset:
+datasizes=np.zeros((len(imFiles),3))
+for (k,f) in enumerate(imFiles):
+    im=misc.imread(f)
+    datasizes[k,:]=(im.shape[0],im.shape[1],im.ndim)    
+imdata=pandas.DataFrame(datasizes)
+fig = plt.figure()
+fig.patch.set_facecolor('white')
+imdata.boxplot()
+plt.show()
 
 maxSize=(128,128)
 

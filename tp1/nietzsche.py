@@ -19,16 +19,14 @@ while char:
         lines.append(line)
         line=""
     char=f.read(1)
-    #if len(lines)==10: # borrar esto
-    #    break
 
 
 # Frecuencias de aparición
 wfreq=Counter()
-# aca se pueden considerar otros signos de puntuación como palabras o descartarlos
 punctuation=[',',':',';','?','.','!','--','"','(',')','=','_'] # el guion '-' define palabras nuevas, no lo agrego acá
 lines_split=[] # redefino la oración en palabras (por los signos de puntuación lo hago acá)
-for l in lines:
+linesok=[]
+for (k,l) in enumerate(lines):
     l_split=[]
     for p in punctuation:
         pcount=0
@@ -46,7 +44,14 @@ for l in lines:
         if w!="":
             wfreq[w]+=1
             l_split.append(w)
-    lines_split.append(l_split)
+
+    # Eliminar oraciones mal formateadas (".", numero de página)
+    if len(l_split)>3: 
+        lines_split.append(l_split)    
+        linesok.append(k)
+
+lines=[l for (k,l) in enumerate(lines) if k in linesok]
+        
 # las mas comunes
 wcomunes=[]
 for w in wfreq.most_common()[0:1000]:
@@ -57,7 +62,7 @@ for w in wfreq.most_common()[-1000:]:
     wraras.append(w[0])
 
 # Transformar las oraciones en función de wcomunes y wraras
-nietzscheDataset=np.zeros([len(lines),2000])
+nietzscheDataset=np.zeros([len(lines_split),2000])
 for (k,l) in enumerate(lines_split):
     # contabilizar cada palabra y asignarla a los vectores wcomunes y wraras.
     for w in l:
@@ -74,6 +79,21 @@ pca = decomposition.PCA(n_components=2)
 pca.fit(nietzscheDataset)
 X = pca.transform(nietzscheDataset)
 pl.scatter(X[:, 0], X[:, 1]) 
+
+
+# Outliers
+X2=X.copy()
+
+for y in [0,1]:
+    for r in range(0,10):
+        pos=np.argmax(X2[:,y])
+        print("oración %d, X=(%.2f,%.2f): %s" %(pos,X2[pos,0],X2[pos,1],lines[pos]))
+        X2[pos,y]=0
+
 pl.show()
 
+pos=np.argmin(X2[:,0])
+print("oración %d, X=(%.2f,%.2f): %s" %(pos,X2[pos,0],X2[pos,1],lines[pos]))
+X2[pos,0]=0
 
+# son todos "." (y otros el número de página) que deben eliminarse...

@@ -6,7 +6,6 @@ from loadImages import loadImages
 from normalizeImage import normalizeImage
 from scaleRange import scaleRange
 from getPatches import getPatches
-# borrar: cosas para sacar cuando este listo para presentar
 
 plt.close('all')
 
@@ -18,7 +17,7 @@ for d in os.walk(dataDir):
     for f in d[2]:
         if ".directory" not in f:
             imFiles.append(d[0]+"/"+f)
-            break # borrar: para hacer pruebas mas rapido
+            
 
 # some dataset stats...
 datasizes=np.zeros((len(imFiles),3))
@@ -36,10 +35,9 @@ maxSize=(128,128)
 
 print("Total: %d imágenes, %d en RGB\n" %(datasizes.shape[0],np.count_nonzero(datasizes[:,2]==3)))
 
-#imFiles=imFiles[1:10]# borrar: dejo algunas de prueba
+#imFiles=imFiles[1:1000]
 
 images=loadImages(imFiles,maxSize)
-
 
 imej=[7,5]
 

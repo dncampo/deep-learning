@@ -1,4 +1,9 @@
 [Dolphin]
+<<<<<<< HEAD
 PreviewsShown=true
 Timestamp=2016,9,7,12,53,24
+=======
+SortRole=type
+Timestamp=2016,9,8,19,38,12
+>>>>>>> f0dbc55cffa66e15ce438236186eb9c39c556bad
 Version=3
