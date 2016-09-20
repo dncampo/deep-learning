@@ -38,7 +38,7 @@ def read_image(path):
     return im
 
     
-def reshape_image(im, max_width, max_height):
+def clamp_image(im, max_width, max_height):
     """
     Returns a PIL image with black borders. If the image size exceed the parameters given, an exception is raised.
     :param path: image path
@@ -99,7 +99,7 @@ def scan_dataset(path):
     print("There are {0} images. Big images = {1}".format(n_images, n_big_images))
 
 
-def read_dataset(path_list, max_width, max_height):
+def read_dataset(path_list, max_width, max_height, transformation='clamp'):
     """
     Returns a numpy matrix with the normalized dataset
     Channel values are R=0, G=1, B=2.
@@ -120,12 +120,17 @@ def read_dataset(path_list, max_width, max_height):
     except MemoryError:
         print("ERROR: The array does not fit in memory")
         raise
-
-    for i in range(n_images):
-        img = read_image(path_list[i])
-        if img.size[0] <= max_width and img.size[1] <= max_height:
-            clamped_img = reshape_image(img, max_width, max_height)
-            dataset[i,:] = np.reshape(clamped_img, (1,vector_len))
+    
+    if transformation == 'clamp':
+        for i in range(n_images):
+            img = read_image(path_list[i])
+            if img.size[0] <= max_width and img.size[1] <= max_height:
+                clamped_img = clamp_image(img, max_width, max_height)
+                dataset[i,:] = np.reshape(clamped_img, (1,vector_len))
+    else: #transformation='reshape'
+        for i in range(n_images):
+            img = read_image(path_list[i])
+            dataset[i,:] = np.reshape(img.resize((max_width, max_height)), (1,vector_len))
     
     print("Dataset shape: {0}".format(dataset.shape))
     return dataset
