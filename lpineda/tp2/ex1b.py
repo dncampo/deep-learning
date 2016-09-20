@@ -1,8 +1,9 @@
-from cifasis.dataset import *
 from sklearn.cross_validation import train_test_split
 
 import sys
 sys.path.append("..")
+from cifasis.dataset import *
+
 
 import matplotlib.pyplot as plt
 
@@ -11,12 +12,21 @@ import theano
 import theano.tensor as T
 rng = numpy.random
 
-N = 400                                   # training sample size
-feats = 784                               # number of input variables
+#N = 400                                   # training sample size
+feats = 784*3                               # number of input variables
 
 # generate a dataset: D = (input_values, target_class)
-D = (rng.randn(N, feats), rng.randint(size=N, low=0, high=2))
-max_training_steps = 1000
+#D = (rng.randn(N, feats), rng.randint(size=N, low=0, high=2))
+
+airplanes_path = '/home/lpineda/101_ObjectCategories/airplanes'
+motorbikes_path = '/home/lpineda/101_ObjectCategories/Motorbikes'
+D1 = read_dataset(parse_dataset_dir(airplanes_path), 28, 28, transformation='reshape')
+D1 = (D1, np.zeros(len(D1[:,1])))
+D2 = read_dataset(parse_dataset_dir(motorbikes_path), 28, 28, transformation='reshape')
+D2 = (D2, np.ones(len(D2[:,1])))
+D = (np.vstack((D1[0], D2[0])), np.hstack((D1[1], D2[1])))
+
+max_training_steps = 100
 
 
 # Declare Theano symbolic variables
@@ -58,7 +68,7 @@ predict = theano.function(inputs=[x], outputs=prediction)
 
 # Train
 
-data_train, data_test, labels_train, labels_test = train_test_split(D[0], D[1], test_size=0.2)
+data_train, data_test, labels_train, labels_test = train_test_split(D[0], D[1], test_size=0.3)
 
 train_error = []
 test_error = []
@@ -69,7 +79,7 @@ while step < max_training_steps:
     step += 1
     #Training phase
     sys.stdout.write(str(step) + " ")
-    for batch in get_mini_batches((data_train, labels_train)):
+    for batch in get_mini_batches((data_train, labels_train), size=64):
         pred, err = train(batch[0], batch[1])
     pred_train = predict(data_train)
     train_error.append(sum(pred_train != labels_train)/float(len(labels_train)))
@@ -78,8 +88,10 @@ while step < max_training_steps:
     pred_test = predict(data_test)
     test_error.append(sum(pred_test != labels_test)/float(len(labels_test)))
 
+plt.figure(1)
 plt.plot(range(len(train_error)),train_error)
 plt.plot(range(len(test_error)),test_error)
+plt.show()
 
 print("Final model:")
 print(w.get_value())
