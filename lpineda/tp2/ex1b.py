@@ -1,7 +1,10 @@
+from cifasis.dataset import *
+from sklearn.cross_validation import train_test_split
+
 import sys
 sys.path.append("..")
 
-from cifasis.dataset import *
+import matplotlib.pyplot as plt
 
 import numpy
 import theano
@@ -13,7 +16,8 @@ feats = 784                               # number of input variables
 
 # generate a dataset: D = (input_values, target_class)
 D = (rng.randn(N, feats), rng.randint(size=N, low=0, high=2))
-training_steps = 10000
+max_training_steps = 1000
+
 
 # Declare Theano symbolic variables
 x = T.dmatrix("x")
@@ -51,10 +55,31 @@ train = theano.function(
           updates=((w, w - 0.1 * gw), (b, b - 0.1 * gb)))
 predict = theano.function(inputs=[x], outputs=prediction)
 
+
 # Train
-for i in range(training_steps):
-    pred, err = train(D[0], D[1])
-    print("Error {0}".format(err.sum()))
+
+data_train, data_test, labels_train, labels_test = train_test_split(D[0], D[1], test_size=0.2)
+
+train_error = []
+test_error = []
+step = 0
+
+print("Training started")
+while step < max_training_steps:
+    step += 1
+    #Training phase
+    sys.stdout.write(str(step) + " ")
+    for batch in get_mini_batches((data_train, labels_train)):
+        pred, err = train(batch[0], batch[1])
+    pred_train = predict(data_train)
+    train_error.append(sum(pred_train != labels_train)/float(len(labels_train)))
+    
+    #Test phase
+    pred_test = predict(data_test)
+    test_error.append(sum(pred_test != labels_test)/float(len(labels_test)))
+
+plt.plot(range(len(train_error)),train_error)
+plt.plot(range(len(test_error)),test_error)
 
 print("Final model:")
 print(w.get_value())
