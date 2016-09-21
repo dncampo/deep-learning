@@ -4,14 +4,18 @@ import numpy as np
 import theano
 import theano.tensor as T
 from accuracy import accuracy
+from dataPartition import dataPartition
 rng = np.random
 
 def relu(x):
     return T.switch(x>0.0,x,0.0)
 
 
-def logRegression(traindata,params,trainMode,nh=0,hfun='sig'):
+def logRegression(data,params,trainMode,nh=0,hfun='sig'):
 
+    # 20% para test
+    traindata,testdata=dataPartition(data,.20)
+    
     x = T.dmatrix("x")
     y = T.dvector("y")
     feats=traindata[0].shape[1]
@@ -34,9 +38,6 @@ def logRegression(traindata,params,trainMode,nh=0,hfun='sig'):
         b = theano.shared(0., name="b")
         p_1 = 1 / (1 + T.exp(-T.dot(x, w) - b))   
     
-    
-    
-
     
     prediction = p_1 > 0.5                    
     xent = -y * T.log(p_1) - (1-y) * T.log(1-p_1) # Cross-entropy
@@ -66,8 +67,9 @@ def logRegression(traindata,params,trainMode,nh=0,hfun='sig'):
         training_steps=params
         for step in range(training_steps):
             pred_train, err = train(traindata[0], traindata[1])
-            if step % 10 == 0:
+            if step % round(training_steps/10) == 0:
                 print('Step %d: xent: %.03f, train acc: %.03f %%' %(step,err.mean(),accuracy(traindata[1],predict(traindata[0]))))
+        print('Step %d: xent: %.03f, train acc: %.03f %%' %(step,err.mean(),accuracy(traindata[1],predict(traindata[0]))))
  
     if trainMode=='minibatch':
         errordif=params[0]
@@ -85,10 +87,13 @@ def logRegression(traindata,params,trainMode,nh=0,hfun='sig'):
             pred_train, err = train(batchx, batchy)
             # Tomo la xent como condición de stop
             e=np.abs((err.mean()-err_old)/err_old)
-            if step % 10 == 0:
+            if step % 500 == 0:
                 print('Step %d: xent: %.03f, ediff: %.03f, train acc: %.03f %%' %(step,err.mean(),e,accuracy(batchy,predict(batchx))))
             step+=1
+        print('Step %d: xent: %.03f, ediff: %.03f, train acc: %.03f %%' %(step,err.mean(),e,accuracy(batchy,predict(batchx))))
         
     # Test
-    # pred, err = test(Dtest)
-    #print('Resultado: %f %%' %accuracy(traindata[1],predict(traindata[0])))
+    pred = predict(testdata[0])
+    print('Test:  acc: %.03f' %accuracy(testdata[1],pred))
+    print('Balance:  %d clase0 - %d clase1\n' %(sum([1 for s in testdata[1] if s==0]), sum([1 for s in testdata[1] if s==1])))
+    

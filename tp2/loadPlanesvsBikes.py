@@ -14,7 +14,6 @@ def loadPlanesvsBikes(dataDir):
                     imFiles.append(d[0]+"/"+f)
         N=len(imFiles)
         data=loadImages(imFiles,(S,S))
-        print(data.shape)
         features=np.reshape(data,[N,S*S*3])
         labels=c*np.ones([N,1])
         dataset1=np.concatenate((features,labels),axis=1)
@@ -22,7 +21,5 @@ def loadPlanesvsBikes(dataDir):
             dataset=np.concatenate((dataset,dataset1),axis=0)
         except:
             dataset=dataset1
-    print("dataset size:")
-    print(dataset.shape)
     res=(dataset[:,:-1],dataset[:,-1])
     return res
