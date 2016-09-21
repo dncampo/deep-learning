@@ -1,71 +1,45 @@
 import os, random, math, pandas
 import numpy as np
-from scipy import misc
-import matplotlib.pyplot as plt
-from loadImages import loadImages
-from normalizeImage import normalizeImage
-from scaleRange import scaleRange
-from getPatches import getPatches
 
-plt.close('all')
+from keras.models import Sequential
+from keras.layers.core import Dense, Dropout, Activation
+from keras.optimizers import SGD, Adam, RMSprop
+#plt.close('all')
 
-dataDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/caltech/accordion/'
-imFiles=[]
+# airplanes vs motorbikes
+dataDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/airplanesVSmotorbikes/'
 
-for d in os.walk(dataDir):
-    for f in d[2]:
-        if ".directory" not in f:
-            imFiles.append(d[0]+"/"+f)
-            
+# cargador por defecto. Cada subfolder es una clase.
+imageTrainGen=keras.preprocessing.image.ImageDataGenerator
+imageTrainGen.flow_from_directory(dataDir) # se pueden hacer directorios diferentes para train/test
 
-# some dataset stats...
-datasizes=np.zeros((len(imFiles),3))
-for (k,f) in enumerate(imFiles):
-    # tomar parametros de la base de datos
-    im=misc.imread(f)
-    datasizes[k,:]=(im.shape[0],im.shape[1],im.ndim)
+# TODO: comprobr que hace normalizacion, escalado, parches,pca
 
-fig = plt.figure()
-fig.patch.set_facecolor('white')
-imdata=pandas.DataFrame(datasizes)
-imdata.boxplot()
+batch_size = 32
+nb_classes = 2
+nb_epoch = 20
 
-maxSize=(128,128) 
+model = Sequential()
 
-print("Total: %d imágenes, %d en RGB\n" %(datasizes.shape[0],np.count_nonzero(datasizes[:,2]==3)))
+model.add(Dense(512, input_shape=(784,)))
+model.add(Activation('relu'))
+model.add(Dropout(0.2))
+model.add(Dense(512))
+model.add(Activation('relu'))
+model.add(Dropout(0.2))
+model.add(Dense(10))
+model.add(Activation('softmax'))
 
-#imFiles=imFiles[1:1000]
+model.summary()
 
-images=loadImages(imFiles,maxSize)
+model.compile(loss='categorical_crossentropy',
+              optimizer=RMSprop(),
+              metrics=['accuracy'])
 
-imej=[7,5]
+history = model.fit_generator(imageTrainGen,
+                    batch_size=batch_size, nb_epoch=nb_epoch,
+                              verbose=1, validation_data=imageTrainGen)
+score = model.evaluate_generator(imageTrainGen, verbose=1)
 
-f1,subplots1=plt.subplots(1,2)
-f1.patch.set_facecolor('white')
-for k  in [0,1]:
-    subplots1[k].imshow(images[imej[k]])
-
-# normalizo las imagenes originales
-im1=misc.imread(imFiles[imej[0]])
-im1n=normalizeImage(im1)
-im2=misc.imread(imFiles[imej[1]])
-im2n=normalizeImage(im2)
-
-f2,subplots2=plt.subplots(2,2)
-f2.patch.set_facecolor('white')
-subplots2[0,0].imshow(im1)
-subplots2[0,1].imshow(scaleRange(im1n))
-subplots2[1,0].imshow(im2)
-subplots2[1,1].imshow(scaleRange(im2n))
-plt.show()
-
-patches=getPatches(imFiles,N=10,S=16,norm=True)
-
-f3,subplots3=plt.subplots(2,5)
-f3.patch.set_facecolor('white')
-for k1  in range(0,2):
-    for k2  in range(0,5):
-        subplots3[k1,k2].imshow(scaleRange(patches[imej[1],k1*5+k2]))
-plt.show()
-
- 
+print('Test score:', score[0])
+print('Test accuracy:', score[1])

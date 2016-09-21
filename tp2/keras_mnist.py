@@ -89,12 +89,12 @@ model.compile(loss='categorical_crossentropy',
               optimizer=RMSprop(),
               metrics=['accuracy'])
 # mod i ==========================================
-N=X_train.shape[0]
-ind=np.array(range(0,N))
-np.random.shuffle(ind)
-trainind=ind[:round(N*ratio)]
-X_train=X_train(trainind,:)
-Y_train=Y_train(trainind,:)
+# N=X_train.shape[0]
+# ind=np.array(range(0,N))
+# np.random.shuffle(ind)
+# trainind=ind[:round(N*ratio)]
+# X_train=X_train(trainind,:)
+# Y_train=Y_train(trainind,:)
 # ================================================
 
 history = model.fit(X_train, Y_train,

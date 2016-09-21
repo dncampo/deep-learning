@@ -60,8 +60,8 @@ def logRegression(traindata,testdata,params,trainMode,rng,nh=0,hfun='sig'):
         training_steps=params
         for step in range(training_steps):
             pred_train, err = train(traindata[0], traindata[1])
-            # if step % round(training_steps/10) == 0:
-            #     print('Step %d: xent: %.03f, train acc: %.03f %%' %(step,err.mean(),accuracy(traindata[1],predict(traindata[0]))))
+            # if step %50 == 0:
+            #      print('Step %d: xent: %.03f, train acc: %.03f %%' %(step,err.mean(),accuracy(traindata[1],predict(traindata[0]))))
         trainacc=accuracy(traindata[1],predict(traindata[0]))
         #print('Step %d: xent: %.03f, train acc: %.03f %%' %(step,err.mean(),accuracy(traindata[1],predict(traindata[0]))))
  
@@ -82,8 +82,8 @@ def logRegression(traindata,testdata,params,trainMode,rng,nh=0,hfun='sig'):
             pred_train, err = train(batchx, batchy)
             # Tomo la xent como condición de stop
             e=np.abs((err.mean()-err_old)/err_old)
-            # if step % 500 == 0:
-            #     print('Step %d: xent: %.03f, ediff: %.03f, train acc: %.03f %%' %(step,err.mean(),e,accuracy(batchy,predict(batchx))))
+            # if step % 50 == 0:
+            #print('Step %d: xent: %.03f, ediff: %.03f, train acc: %.03f %%' %(step,err.mean(),e,accuracy(batchy,predict(batchx)))) # 
             step+=1
         trainacc=accuracy(batchy,predict(batchx))
         #print('Step %d: xent: %.03f, ediff: %.03f, train acc: %.03f %%' %(step,err.mean(),e,accuracy(batchy,predict(batchx))))

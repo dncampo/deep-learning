@@ -62,9 +62,9 @@ if ej=='bii-biii':
     D=loadPlanesvsBikes(dataDir)
 
     seeds=[750,2,123,489,1000,656,22,123,159,953]
-    acctest=np.zeros((5,len(seeds)))
-    acctrain=np.zeros((5,len(seeds)))
-    etime=np.zeros((5,len(seeds)))
+    acctest=np.zeros((4,len(seeds)))
+    acctrain=np.zeros((4,len(seeds)))
+    etime=np.zeros((4,len(seeds)))
     
     # algunas repeticiones
     for (k,seed) in enumerate(seeds):
@@ -90,9 +90,7 @@ if ej=='bii-biii':
                 atrain,atest=logRegression(traindata,testdata,params=[errorDiff,10,nsteps],trainMode='minibatch',rng=rng,nh=100,hfun='sig')
             if e==3:
                 atrain,atest=logRegression(traindata,testdata,params=[errorDiff,10,nsteps],trainMode='minibatch',rng=rng,nh=100,hfun='relu')
-            if e==4:
-                atrain,atest=logRegression(traindata,testdata,params=nsteps,trainMode='batch',rng=rng,nh=100,hfun='relu')
-  
+           
             acctrain[e,k]=atrain
             acctest[e,k]=atest
             etime[e,k]=time.time()-start
