@@ -92,6 +92,6 @@ def logRegression(traindata,testdata,params,trainMode,nh=0,hfun='sig'):
     # Test
     pred = predict(testdata[0])
     print('Test:  acc: %.03f' %accuracy(testdata[1],pred))
-    print('Balance Test:  %d clase0 - %d clase1\n' %(sum([1 for s in testdata[1] if s==0]), sum([1 for s in testdata[1] if s==1])))
-    print('Balance Train:  %d clase0 - %d clase1\n' %(sum([1 for s in traindata[1] if s==0]), sum([1 for s in traindata[1] if s==1])))
+    print('Balance Test:  %d clase0 - %d clase1' %(sum([1 for s in testdata[1] if s==0]), sum([1 for s in testdata[1] if s==1])))
+    print('Balance Train:  %d clase0 - %d clase1' %(sum([1 for s in traindata[1] if s==0]), sum([1 for s in traindata[1] if s==1])))
     
