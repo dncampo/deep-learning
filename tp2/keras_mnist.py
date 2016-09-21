@@ -1,9 +1,7 @@
 '''Trains a simple deep NN on the MNIST dataset.
 Gets to 98.40% test accuracy after 20 epochs
 (there is *a lot* of margin for parameter tuning).
-2 seconds per epoch on a K520 GPU.
-'''
-
+2 seconds per epoch on a K520 GPU.'''
 from __future__ import print_function
 import numpy as np
 np.random.seed(1337)  # for reproducibility
@@ -89,12 +87,12 @@ model.compile(loss='categorical_crossentropy',
               optimizer=RMSprop(),
               metrics=['accuracy'])
 # mod i ==========================================
-# N=X_train.shape[0]
-# ind=np.array(range(0,N))
-# np.random.shuffle(ind)
-# trainind=ind[:round(N*ratio)]
-# X_train=X_train(trainind,:)
-# Y_train=Y_train(trainind,:)
+N=X_train.shape[0]
+ind=np.array(range(0,N))
+np.random.shuffle(ind)
+trainind=ind[:round(N*trainSizeRatio)]
+X_train=X_train[trainind,:]
+Y_train=Y_train[trainind,:]
 # ================================================
 
 history = model.fit(X_train, Y_train,
