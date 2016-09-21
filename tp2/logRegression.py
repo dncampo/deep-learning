@@ -4,13 +4,9 @@ import numpy as np
 import theano
 import theano.tensor as T
 from accuracy import accuracy
-rng = np.random
-
-def relu(x):
-    return T.switch(x>0.0,x,0.0)
 
 
-def logRegression(traindata,testdata,params,trainMode,nh=0,hfun='sig'):
+def logRegression(traindata,testdata,params,trainMode,rng,nh=0,hfun='sig'):
 
   
     x = T.dmatrix("x")
@@ -64,17 +60,19 @@ def logRegression(traindata,testdata,params,trainMode,nh=0,hfun='sig'):
         training_steps=params
         for step in range(training_steps):
             pred_train, err = train(traindata[0], traindata[1])
-            if step % round(training_steps/10) == 0:
-                print('Step %d: xent: %.03f, train acc: %.03f %%' %(step,err.mean(),accuracy(traindata[1],predict(traindata[0]))))
-        print('Step %d: xent: %.03f, train acc: %.03f %%' %(step,err.mean(),accuracy(traindata[1],predict(traindata[0]))))
+            # if step % round(training_steps/10) == 0:
+            #     print('Step %d: xent: %.03f, train acc: %.03f %%' %(step,err.mean(),accuracy(traindata[1],predict(traindata[0]))))
+        trainacc=accuracy(traindata[1],predict(traindata[0]))
+        #print('Step %d: xent: %.03f, train acc: %.03f %%' %(step,err.mean(),accuracy(traindata[1],predict(traindata[0]))))
  
     if trainMode=='minibatch':
         errordif=params[0]
         batchsize=params[1]
+        maxsteps=params[2]
         e=1
         err_old=1
         step=0
-        while e>errordif:
+        while e>errordif and step<maxsteps:
             # tomar ejemplos al azar
             batchind=rng.randint(0,len(traindata[0]),batchsize)
             batchx=[traindata[0][i] for i in batchind]
@@ -84,14 +82,16 @@ def logRegression(traindata,testdata,params,trainMode,nh=0,hfun='sig'):
             pred_train, err = train(batchx, batchy)
             # Tomo la xent como condición de stop
             e=np.abs((err.mean()-err_old)/err_old)
-            if step % 500 == 0:
-                print('Step %d: xent: %.03f, ediff: %.03f, train acc: %.03f %%' %(step,err.mean(),e,accuracy(batchy,predict(batchx))))
+            # if step % 500 == 0:
+            #     print('Step %d: xent: %.03f, ediff: %.03f, train acc: %.03f %%' %(step,err.mean(),e,accuracy(batchy,predict(batchx))))
             step+=1
-        print('Step %d: xent: %.03f, ediff: %.03f, train acc: %.03f %%' %(step,err.mean(),e,accuracy(batchy,predict(batchx))))
+        trainacc=accuracy(batchy,predict(batchx))
+        #print('Step %d: xent: %.03f, ediff: %.03f, train acc: %.03f %%' %(step,err.mean(),e,accuracy(batchy,predict(batchx))))
         
     # Test
     pred = predict(testdata[0])
-    print('Test:  acc: %.03f' %accuracy(testdata[1],pred))
-    print('Balance Test:  %d clase0 - %d clase1' %(sum([1 for s in testdata[1] if s==0]), sum([1 for s in testdata[1] if s==1])))
-    print('Balance Train:  %d clase0 - %d clase1' %(sum([1 for s in traindata[1] if s==0]), sum([1 for s in traindata[1] if s==1])))
-    
+    testacc=accuracy(testdata[1],pred)
+    # print('Test:  acc: %.03f' %accuracy(testdata[1],pred))
+    # print('Balance Test:  %d clase0 - %d clase1' %(sum([1 for s in testdata[1] if s==0]), sum([1 for s in testdata[1] if s==1])))
+    # print('Balance Train:  %d clase0 - %d clase1' %(sum([1 for s in traindata[1] if s==0]), sum([1 for s in traindata[1] if s==1])))
+    return trainacc,testacc

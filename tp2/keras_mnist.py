@@ -15,9 +15,11 @@ from keras.optimizers import SGD, Adam, RMSprop
 from keras.utils import np_utils
 
 
+trainSizeRatio=0.25
+
 batch_size = 128
 nb_classes = 10
-nb_epoch = 5#20
+nb_epoch = 20
 
 # the data, shuffled and split between train and test sets
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
@@ -36,6 +38,8 @@ Y_train = np_utils.to_categorical(y_train, nb_classes)
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
 model = Sequential()
+
+# Original =======================================
 model.add(Dense(512, input_shape=(784,)))
 model.add(Activation('relu'))
 model.add(Dropout(0.2))
@@ -44,21 +48,56 @@ model.add(Activation('relu'))
 model.add(Dropout(0.2))
 model.add(Dense(10))
 model.add(Activation('softmax'))
-
+# ================================================
+# mod ii =========================================
+# model.add(Dense(512, input_shape=(784,)))
+# model.add(Activation('relu'))
+# model.add(Dense(10))
+# model.add(Activation('softmax'))
+# ================================================
+# mod iii ========================================
+# model.add(Dense(512, input_shape=(784,)))
+# model.add(Activation('sigmoid'))
+# model.add(Dropout(0.2))
+# model.add(Dense(512))
+# model.add(Activation('sigmoid'))
+# model.add(Dropout(0.2))
+# model.add(Dense(10))
+# model.add(Activation('softmax'))
+# ================================================
+# mod iv =========================================
+# model.add(Dense(512, input_shape=(784,)))
+# model.add(Activation('relu'))
+# model.add(Dropout(0.6))
+# model.add(Dense(512))
+# model.add(Activation('relu'))
+# model.add(Dropout(0.6))
+# model.add(Dense(10))
+# model.add(Activation('softmax'))
+# ================================================
+# mod v ==========================================
+# model.add(Dense(512, input_shape=(784,)))
+# model.add(Activation('relu'))
+# model.add(Dense(512))
+# model.add(Activation('relu'))
+# model.add(Dense(10))
+# model.add(Activation('softmax'))
+# ================================================
 model.summary()
 
 model.compile(loss='categorical_crossentropy',
               optimizer=RMSprop(),
               metrics=['accuracy'])
+# mod i ==========================================
+N=X_train.shape[0]
+ind=np.array(range(0,N))
+np.random.shuffle(ind)
+trainind=ind[:round(N*ratio)]
+X_train=X_train(trainind,:)
+Y_train=Y_train(trainind,:)
+# ================================================
 
-trainSizeRatio=0.25 #1 
-endind=len(X_train)*trainSizeRatio
-# cc: 0.9824 - val_loss: 0.1470 - val_acc: 0.9579
-# Test score: 0.146966367855
-# Test accuracy: 0.9579
-
-
-history = model.fit(X_train[0:endind,:], Y_train[0:endind,:],
+history = model.fit(X_train, Y_train,
                     batch_size=batch_size, nb_epoch=nb_epoch,
                     verbose=1, validation_data=(X_test, Y_test))
 score = model.evaluate(X_test, Y_test, verbose=0)
