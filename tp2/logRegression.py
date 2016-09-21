@@ -4,18 +4,15 @@ import numpy as np
 import theano
 import theano.tensor as T
 from accuracy import accuracy
-from dataPartition import dataPartition
 rng = np.random
 
 def relu(x):
     return T.switch(x>0.0,x,0.0)
 
 
-def logRegression(data,params,trainMode,nh=0,hfun='sig'):
+def logRegression(traindata,testdata,params,trainMode,nh=0,hfun='sig'):
 
-    # 20% para test
-    traindata,testdata=dataPartition(data,.20)
-    
+  
     x = T.dmatrix("x")
     y = T.dvector("y")
     feats=traindata[0].shape[1]

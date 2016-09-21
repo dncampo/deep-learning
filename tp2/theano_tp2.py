@@ -3,6 +3,7 @@
 import theano
 import sys
 import numpy as np
+from dataPartition import dataPartition
 from logRegression import logRegression
 from loadPlanesvsBikes import loadPlanesvsBikes
 np.random.seed(700)  # for reproducibility
@@ -33,7 +34,10 @@ if dataset=='rand':
 if dataset=='mvsp':
     dataDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/caltech/'
     D=loadPlanesvsBikes(dataDir)
-    
+
+# 20% para test
+traindata,testdata=dataPartition(D,.20)
+
     
 # TP2.1.b:
 # Modifique​este ejemplo de regresióxn logística​ para: 
@@ -42,23 +46,23 @@ if dataset=='mvsp':
 if ej=='bi':
     nsteps = 50
     print('Batch training:')
-    logRegression(D,params=nsteps,trainMode='batch')
+    logRegression(traindata,testdata,params=nsteps,trainMode='batch')
 
 #i.procesar los datos por lotes (mini­batches)
 if ej=='bi':
     errorDiff=0.01 # la condición de parada es la diferencia en el error de entrenamiento.
     print('Minibatch training:')
-    logRegression(D,params=[errorDiff,10],trainMode='minibatch')
+    logRegression(traindata,testdata,params=[errorDiff,10],trainMode='minibatch')
 
 #ii. utilizar como dataset Caltech101 (airplanes vs motorbikes) rescaleado a 28x28 pxl. 
 #iii. Agregar al modelo una capa de 100 neuronas ocultas con activación ReLU.
 if ej=='bii-biii':
     print('Airplanes vs Motorbikes:')
     errorDiff=0.001
-    logRegression(D,params=[errorDiff,10],trainMode='minibatch')
+    logRegression(traindata,testdata,params=[errorDiff,10],trainMode='minibatch')
     print('Airplanes vs Motorbikes + hidden layer sigmoidea:')
-    logRegression(D,params=[errorDiff,10],trainMode='minibatch',nh=100,hfun='sig')
+    logRegression(traindata,testdata,params=[errorDiff,10],trainMode='minibatch',nh=100,hfun='sig')
     print('Airplanes vs Motorbikes + hidden layer relu:')
-    logRegression(D,params=[errorDiff,10],trainMode='minibatch',nh=100,hfun='relu')
+    logRegression(traindata,testdata,params=[errorDiff,10],trainMode='minibatch',nh=100,hfun='relu')
 
 
