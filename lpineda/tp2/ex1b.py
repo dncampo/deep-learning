@@ -19,15 +19,18 @@ n_hidden = 100  # number of neurons in the hidden layer
 # generate a dataset: D = (input_values, target_class)
 #D = (rng.randn(N, feats), rng.randint(size=N, low=0, high=2))
 
+print("Parsing dataset")
 airplanes_path = '/home/lpineda/101_ObjectCategories/airplanes'
 motorbikes_path = '/home/lpineda/101_ObjectCategories/Motorbikes'
 D1 = read_dataset(parse_dataset_dir(airplanes_path), 28, 28, transformation='reshape')
+D1 = D1/np.max(D1)
 n_airplanes = len(D1[:,1])
 D2 = read_dataset(parse_dataset_dir(motorbikes_path), 28, 28, transformation='reshape')
+D2 = D2/np.max(D2)
 n_motorbikes = len(D2[:,1])
 D = (np.vstack((D1, D2)), np.hstack((np.zeros(n_airplanes), np.ones(n_motorbikes))))
 
-max_training_steps = 10000
+max_training_steps = 1000
 
 
 # Declare Theano symbolic variables
@@ -52,17 +55,17 @@ b = theano.shared(0., name="b")
 
 # Construct Theano expression graph
 h_lyr = T.dot(x,wh) + bh
-ph_1 = theano.tensor.nnet.relu(h_lyr) # ReLU
+ph_1 = T.switch(h_lyr<0, 0, h_lyr) # ReLU
 p_1 = 1 / (1 + T.exp(-T.dot(ph_1, w) - b))   # Probability that target = 1
 prediction = p_1 > 0.5                    # The prediction thresholded
 xent = -y * T.log(p_1) - (1-y) * T.log(1-p_1) # Cross-entropy loss function
-cost = xent.mean() + 0.01 * (w ** 2).sum() + 0.01 * (wh ** 2).sum()# The cost to minimize
+cost = xent.mean() + 0.01 * (w ** 2).sum() + 0.01 * (wh ** 2).sum() # The cost to minimize
 gw, gb, gwh, gbh = T.grad(cost, [w, b, wh, bh])             # Compute the gradient of the cost
                                           # w.r.t weight vector w and
                                           # bias term b
                                           # (we shall return to this in a
                                           # following section of this tutorial)
-lrn_rate = 0.1
+lrn_rate = 0.01
 
 # Compile
 train = theano.function(
@@ -71,6 +74,7 @@ train = theano.function(
           updates=((w, w - lrn_rate * gw), (b, b - lrn_rate * gb),
                    (wh, wh - lrn_rate * gwh), (bh, bh - lrn_rate * gbh)))
 predict = theano.function(inputs=[x], outputs=prediction)
+f = theano.function(inputs=[x], outputs=h_lyr)
 
 
 # Train
@@ -86,9 +90,9 @@ while step < max_training_steps:
     step += 1
     #Training phase
     sys.stdout.write(str(step) + " ")
-#    for batch in get_mini_batches((data_train, labels_train), size=64):
-#        pred, err = train(batch[0], batch[1])
-    pred, err = train(data_train, labels_train)
+    for batch in get_mini_batches((data_train, labels_train), size=64):
+        pred, err = train(batch[0], batch[1])
+#    pred, err = train(data_train, labels_train)
     print(" xent " + str(err.mean()))
     pred_train = predict(data_train)
     train_error.append(sum(pred_train != labels_train)/float(len(labels_train)))
