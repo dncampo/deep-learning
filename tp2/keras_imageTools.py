@@ -13,11 +13,12 @@ trainDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/airplane
 validDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/airplanesVSmotorbikes_valid/'
 
 # cargador por defecto. Cada subfolder es una clase.
-imageGen=ImageDataGenerator(featurewise_std_normalization=True,  featurewise_center=True)
+#imageGen=ImageDataGenerator(featurewise_std_normalization=True,  featurewise_center=True)
+imageGen=ImageDataGenerator()
+
 train_generator=imageGen.flow_from_directory(trainDir) 
 
-imageGen2=ImageDataGenerator(featurewise_std_normalization=True,  featurewise_center=True)
-valid_generator=imageGen2.flow_from_directory(validDir) 
+valid_generator=imageGen.flow_from_directory(validDir) 
 
 # TODO: como hacer normalización desde el flow_directory??
 
@@ -26,7 +27,7 @@ valid_generator=imageGen2.flow_from_directory(validDir)
 
 batch_size = 32
 nb_classes = 2
-nb_epoch = 20
+nb_epoch = 5
 
 trainSamples=train_generator.N
 validationSamples=valid_generator.N
@@ -62,3 +63,4 @@ score = model.evaluate_generator(valid_generator,validationSamples, verbose=1)
 
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
+model.save('keras_image.h5')
