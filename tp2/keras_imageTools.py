@@ -5,32 +5,44 @@ from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
 from keras.optimizers import SGD, Adam, RMSprop
 from keras.preprocessing.image import ImageDataGenerator
+from keras.layers.core import Reshape
 #plt.close('all')
 
 # airplanes vs motorbikes
-dataDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/airplanesVSmotorbikes/'
+trainDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/airplanesVSmotorbikes_train/'
+validDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/airplanesVSmotorbikes_valid/'
 
 # cargador por defecto. Cada subfolder es una clase.
 imageTrainGen=ImageDataGenerator()
-train_generator=imageTrainGen.flow_from_directory(dataDir) # se pueden hacer directorios diferentes para train/test
+train_generator=imageTrainGen.flow_from_directory(trainDir) 
+imageValidGen=ImageDataGenerator()
+valid_generator=imageValidGen.flow_from_directory(validDir) 
 
 # TODO: comprobr que hace normalizacion, escalado, parches,pca
 
-batch_size = 32
+# batch 32: Test score: 8.05904769897, Test accuracy: 0.5
+
+
+batch_size = 128
 nb_classes = 2
 nb_epoch = 20
+
+trainSamples=train_generator.N
+validationSamples=valid_generator.N
 
 model = Sequential()
 
 #model.add(Dense(512, input_shape=(784,)))
-feat=train_generator.image_shape[0]*train_generator.image_shape[1]*train_generator.image_shape[2]
-model.add(Dense(512, input_shape=(feat,)))
+# O hago un reshape del input, o uso otro tipo de capa...
+# model.add(Dense(512, input_shape=(256,256,3,)))
+model.add(Reshape((256*256*3,), input_shape=(256,256,3)))
+model.add(Dense(100, input_shape=(256*256*3,)))
 model.add(Activation('relu'))
-model.add(Dropout(0.2))
-model.add(Dense(512))
-model.add(Activation('relu'))
-model.add(Dropout(0.2))
-model.add(Dense(10))
+# model.add(Dropout(0.2))
+# model.add(Dense(512))
+# model.add(Activation('relu'))
+# model.add(Dropout(0.2))
+model.add(Dense(nb_classes)) 
 model.add(Activation('softmax'))
 
 model.summary()
@@ -45,7 +57,7 @@ history = model.fit_generator(train_generator,
 # history = model.fit_generator(train_generator,
 #                     samples_per_epoch=batch_size, nb_epoch=nb_epoch,
 #                               verbose=1, validation_data=train_generator)
-score = model.evaluate_generator(train_generator, verbose=1)
+score = model.evaluate_generator(valid_generator,validationSamples, verbose=1)
 
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
