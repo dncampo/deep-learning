@@ -13,17 +13,18 @@ trainDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/airplane
 validDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/airplanesVSmotorbikes_valid/'
 
 # cargador por defecto. Cada subfolder es una clase.
-imageTrainGen=ImageDataGenerator()
-train_generator=imageTrainGen.flow_from_directory(trainDir) 
-imageValidGen=ImageDataGenerator()
-valid_generator=imageValidGen.flow_from_directory(validDir) 
+imageGen=ImageDataGenerator(featurewise_std_normalization=True,  featurewise_center=True)
+train_generator=imageGen.flow_from_directory(trainDir) 
 
-# TODO: comprobr que hace normalizacion, escalado, parches,pca
+imageGen2=ImageDataGenerator(featurewise_std_normalization=True,  featurewise_center=True)
+valid_generator=imageGen2.flow_from_directory(validDir) 
 
-# batch 32: Test score: 8.05904769897, Test accuracy: 0.5
+# TODO: como hacer normalización desde el flow_directory??
+
+# batch 32 y 128: Test score: 8.05904769897, Test accuracy: 0.5
 
 
-batch_size = 128
+batch_size = 32
 nb_classes = 2
 nb_epoch = 20
 
