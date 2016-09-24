@@ -4,7 +4,6 @@ import sys
 sys.path.append("..")
 from cifasis.dataset import *
 
-
 import matplotlib.pyplot as plt
 
 import numpy
@@ -20,8 +19,8 @@ n_hidden = 100  # number of neurons in the hidden layer
 #D = (rng.randn(N, feats), rng.randint(size=N, low=0, high=2))
 
 print("Parsing dataset")
-airplanes_path = '/home/lpineda/101_ObjectCategories/airplanes'
-motorbikes_path = '/home/lpineda/101_ObjectCategories/Motorbikes'
+airplanes_path = '../../101_ObjectCategories/airplanes'
+motorbikes_path = '../../101_ObjectCategories/Motorbikes'
 D1 = read_dataset(parse_dataset_dir(airplanes_path), 28, 28, transformation='reshape')
 D1 = D1/np.max(D1)
 n_airplanes = len(D1[:,1])
@@ -30,7 +29,6 @@ D2 = D2/np.max(D2)
 n_motorbikes = len(D2[:,1])
 D = (np.vstack((D1, D2)), np.hstack((np.zeros(n_airplanes), np.ones(n_motorbikes))))
 
-max_training_steps = 1000
 
 
 # Declare Theano symbolic variables
@@ -42,11 +40,11 @@ y = T.dvector("y")
 # this and the following bias variable b
 # are shared so they keep their values
 # between training iterations (updates)
-wh = theano.shared(rng.randn(feats, n_hidden), name="wh")
+wh = theano.shared(rng.randn(feats, n_hidden), name="wh") #hidden layer weights W
 w = theano.shared(rng.randn(n_hidden), name="w")
 
 # initialize the bias term
-bh = theano.shared(np.zeros(n_hidden), name="bh")
+bh = theano.shared(np.zeros(n_hidden), name="bh") #hidden layer biases b
 b = theano.shared(0., name="b")
 
 #print("Initial model:")
@@ -54,8 +52,8 @@ b = theano.shared(0., name="b")
 #print(b.get_value())
 
 # Construct Theano expression graph
-h_lyr = T.dot(x,wh) + bh
-ph_1 = T.switch(h_lyr<0, 0, h_lyr) # ReLU
+h_lyr = T.dot(x,wh) + bh # hidden layer propagation
+ph_1 = T.switch(h_lyr<0, 0, h_lyr) # ReLU activation
 p_1 = 1 / (1 + T.exp(-T.dot(ph_1, w) - b))   # Probability that target = 1
 prediction = p_1 > 0.5                    # The prediction thresholded
 xent = -y * T.log(p_1) - (1-y) * T.log(1-p_1) # Cross-entropy loss function
@@ -76,35 +74,44 @@ train = theano.function(
 predict = theano.function(inputs=[x], outputs=prediction)
 f = theano.function(inputs=[x], outputs=h_lyr)
 
-
 # Train
-
 data_train, data_test, labels_train, labels_test = train_test_split(D[0], D[1], test_size=0.3)
 
 train_error = []
 test_error = []
-step = 0
+epoch = 0
+max_epoch = 500
+
+queue = range(50)
 
 print("Training started")
-while step < max_training_steps:
-    step += 1
+while epoch < max_epoch and np.var(queue)>10e-10:
+    epoch += 1
     #Training phase
-    sys.stdout.write(str(step) + " ")
+    sys.stdout.write(str(epoch) + " ")
     for batch in get_mini_batches((data_train, labels_train), size=64):
         pred, err = train(batch[0], batch[1])
 #    pred, err = train(data_train, labels_train)
-    print(" xent " + str(err.mean()))
     pred_train = predict(data_train)
     train_error.append(sum(pred_train != labels_train)/float(len(labels_train)))
     
     #Test phase
     pred_test = predict(data_test)
     test_error.append(sum(pred_test != labels_test)/float(len(labels_test)))
+    queue.pop()
+    queue.insert(0,test_error[-1])
+    
+if epoch < max_epoch:
+    print("Ended by test criteria")
+else:
+    print("Maximum number of epochs has been reached")
 
-plt.figure(1)
 plt.plot(range(len(train_error)),train_error)
 plt.plot(range(len(test_error)),test_error)
-plt.show()
+plt.legend(['Train error','Test error'])
+plt.xlabel('Epoch')
+plt.ylabel('% error')
+plt.savefig('ex1b3.png')
 
 #print("Final model:")
 #print(w.get_value())
