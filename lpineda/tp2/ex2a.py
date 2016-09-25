@@ -67,3 +67,8 @@ history = model.fit(X_train, Y_train,
 score = model.evaluate(X_test, Y_test, verbose=0)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
+
+text_file = open('ex2a1.txt','w')
+text_file.write('Test score:' + str(score[0]))
+text_file.write('Test accuracy:' + str(score[1]))
+text_file.close()
