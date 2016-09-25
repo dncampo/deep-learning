@@ -13,7 +13,6 @@ rng = numpy.random
 
 #N = 400                                   # training sample size
 feats = 784*3                               # number of input variables
-n_hidden = 100  # number of neurons in the hidden layer
 
 # generate a dataset: D = (input_values, target_class)
 #D = (rng.randn(N, feats), rng.randint(size=N, low=0, high=2))
@@ -29,8 +28,6 @@ D2 = D2/np.max(D2)
 n_motorbikes = len(D2[:,1])
 D = (np.vstack((D1, D2)), np.hstack((np.zeros(n_airplanes), np.ones(n_motorbikes))))
 
-
-
 # Declare Theano symbolic variables
 x = T.dmatrix("x")
 y = T.dvector("y")
@@ -40,11 +37,9 @@ y = T.dvector("y")
 # this and the following bias variable b
 # are shared so they keep their values
 # between training iterations (updates)
-wh = theano.shared(rng.randn(feats, n_hidden), name="wh") #hidden layer weights W
-w = theano.shared(rng.randn(n_hidden), name="w")
+w = theano.shared(rng.randn(feats), name="w")
 
 # initialize the bias term
-bh = theano.shared(np.zeros(n_hidden), name="bh") #hidden layer biases b
 b = theano.shared(0., name="b")
 
 #print("Initial model:")
@@ -52,13 +47,11 @@ b = theano.shared(0., name="b")
 #print(b.get_value())
 
 # Construct Theano expression graph
-h_lyr = T.dot(x,wh) + bh # hidden layer propagation
-ph_1 = T.switch(h_lyr<0, 0, h_lyr) # ReLU activation
-p_1 = 1 / (1 + T.exp(-T.dot(ph_1, w) - b))   # Probability that target = 1
+p_1 = 1 / (1 + T.exp(-T.dot(x, w) - b))   # Probability that target = 1
 prediction = p_1 > 0.5                    # The prediction thresholded
 xent = -y * T.log(p_1) - (1-y) * T.log(1-p_1) # Cross-entropy loss function
-cost = xent.mean() + 0.01 * (w ** 2).sum() + 0.01 * (wh ** 2).sum() # The cost to minimize
-gw, gb, gwh, gbh = T.grad(cost, [w, b, wh, bh])             # Compute the gradient of the cost
+cost = xent.mean() + 0.01 * (w ** 2).sum()  # The cost to minimize
+gw, gb = T.grad(cost, [w, b])             # Compute the gradient of the cost
                                           # w.r.t weight vector w and
                                           # bias term b
                                           # (we shall return to this in a
@@ -69,8 +62,8 @@ lrn_rate = 0.01
 train = theano.function(
           inputs=[x,y],
           outputs=[prediction, xent],
-          updates=((w, w - lrn_rate * gw), (b, b - lrn_rate * gb),
-                   (wh, wh - lrn_rate * gwh), (bh, bh - lrn_rate * gbh)))
+          updates=((w, w - lrn_rate * gw), (b, b - lrn_rate * gb)))
+          
 predict = theano.function(inputs=[x], outputs=prediction)
 
 # Train
@@ -110,7 +103,7 @@ plt.plot(range(len(test_error)),test_error)
 plt.legend(['Train error','Test error'])
 plt.xlabel('Epoch')
 plt.ylabel('% error')
-plt.savefig('ex1b3.png')
+plt.savefig('ex1b2.png')
 
 #print("Final model:")
 #print(w.get_value())
