@@ -70,5 +70,5 @@ print('Test accuracy:', score[1])
 
 text_file = open('ex2a1.txt','w')
 text_file.write('Test score:' + str(score[0]))
-text_file.write('Test accuracy:' + str(score[1]))
+text_file.write('\nTest accuracy:' + str(score[1]))
 text_file.close()
