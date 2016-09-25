@@ -23,17 +23,26 @@ nb_epoch = 20
 # the data, shuffled and split between train and test sets
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
+rnd_idx = range(60000)
+np.random.shuffle(rnd_idx)
+rnd_idx = rnd_idx[0:int(60000*.25)]
+
 X_train = X_train.reshape(60000, 784)
+X_train = X_train[rnd_idx,:]
+
 X_test = X_test.reshape(10000, 784)
 X_train = X_train.astype('float32')
 X_test = X_test.astype('float32')
 X_train /= 255
 X_test /= 255
+
 print(X_train.shape[0], 'train samples')
 print(X_test.shape[0], 'test samples')
 
 # convert class vectors to binary class matrices
 Y_train = np_utils.to_categorical(y_train, nb_classes)
+Y_train = Y_train[rnd_idx,:]
+
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
 model = Sequential()
