@@ -1,97 +1,93 @@
-import os, random, math, pandas
+import os, random, math
 import numpy as np
 
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
-from keras.optimizers import SGD, Adam, RMSprop
+#from keras.optimizers import SGD, Adam, RMSprop
 from keras.preprocessing.image import ImageDataGenerator
-from keras.layers.core import Reshape,Flatten
-from keras.layers.convolutional import Convolution2D,MaxPooling2D
-#plt.close('all')
+from keras.layers.core import Flatten
+from scipy import io
+import time
 
 # airplanes vs motorbikes
 trainDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/airplanesVSmotorbikes_train/'
 validDir='/home/leandro/workspace/Dropbox/ref/deeplearning_cifasis/data/airplanesVSmotorbikes_valid/'
 
-# cargador por defecto. Cada subfolder es una clase.
-#imageGen=ImageDataGenerator(featurewise_std_normalization=True,  featurewise_center=True)
-imageGenTrain=ImageDataGenerator(rotation_range=40,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        rescale=1./255,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True,
-                                 fill_mode='nearest')
-imageGenTest=ImageDataGenerator(rescale=1./255)
+augmentationv=[0,1]
+nhidv=[32,64,128,256]
+nhid2v=[0,32,64]
+dropoutv=[0,0.1,0.2,.5]
+actfuncv=['relu','sigmoid']
+results=[['augmentation','nhid','nhid2','dropoout','actfunc','trainacc','testacc']]
+e=0
+E=len(augmentationv)*len(nhidv)*len(nhid2v)*len(dropoutv)*len(actfuncv)
+start=time.time()
+fout=open('/home/leandro/tmp/keras.mat','bw')
+for augmentation in augmentationv[::-1]:
+    for nhid in nhidv[::-1]:
+        for nhid2 in nhid2v[::-1]:
+            for dropout in dropoutv[::-1]:
+                for actfunc in actfuncv:
+                    etime=time.time()-start
+                    eta=-1
+                    if e>0:
+                        eta=etime/e*(E-e)/3600
+                        
+                    print('%d/%d - %0.2fs (ETA: %0.2fh)' %(e,E,etime,eta))
+                    if augmentation:
+                        imageGenTrain=ImageDataGenerator(rotation_range=40,
+                                                     rescale=1./255,
+                                                     width_shift_range=0.2,
+                                                     height_shift_range=0.2,
+                                                     shear_range=0.2,
+                                                     zoom_range=0.2,
+                                                         horizontal_flip=True
+                                                         )
+                    else:
+                        imageGenTrain=ImageDataGenerator(rescale=1./255)
+                    imageGenTest=ImageDataGenerator(rescale=1./255)
+    
+                    imsize=64
+                    batch_size=64
+                    nb_classes = 2
+                    nb_epoch = 10 
 
-imsize=128
-batch_size = 128
-nb_classes = 2
-nb_epoch = 20
+                    train_generator=imageGenTrain.flow_from_directory(trainDir,target_size=(imsize, imsize),batch_size=batch_size, class_mode='binary')
+                
+                    valid_generator=imageGenTest.flow_from_directory(validDir,target_size=(imsize, imsize),batch_size=batch_size, class_mode='binary')
 
-train_generator=imageGenTrain.flow_from_directory(trainDir,target_size=(imsize, imsize),batch_size=batch_size, class_mode='binary')
-#,save_to_dir='/home/leandro/tmp/')
+                    trainSamples=train_generator.N
+                    validationSamples=valid_generator.N
 
-valid_generator=imageGenTest.flow_from_directory(validDir,target_size=(imsize, imsize),batch_size=batch_size, class_mode='binary')
+                    model = Sequential()
+                    model.add(Flatten(input_shape=(imsize,imsize,3))) 
+                    model.add(Dense(nhid))
+                    model.add(Activation(actfunc))
+                    model.add(Dropout(dropout))
+                    if nhid2>0:
+                        model.add(Dense(nhid2))
+                        model.add(Activation(actfunc))
+                        model.add(Dropout(dropout))
+                        
+                    model.add(Dense(1))
+                    model.add(Activation('sigmoid'))
+                    #model.summary()
 
-# train_generator=imageGenTrain.flow_from_directory(trainDir,target_size=(imsize, imsize)) # categorical labels
+                    model.compile(loss='binary_crossentropy',
+                                  optimizer='rmsprop',
+                                  metrics=['accuracy'])
 
+                    history = model.fit_generator(train_generator,
+                                                  samples_per_epoch=batch_size*20,
+                                                  nb_epoch=nb_epoch,verbose=1)
+                    score = model.evaluate_generator(valid_generator,
+                                                     validationSamples,verbose=0)
 
-
-
-trainSamples=train_generator.N
-validationSamples=valid_generator.N
-
-model = Sequential()
-
-
-# esto creo que no anda
-#model.add(Reshape((imsize*imsize*3,), input_shape=(imsize,imsize,3)))
-
-model.add(Convolution2D(32, 3, 3, input_shape=(imsize, imsize,3)))
-model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-
-model.add(Convolution2D(32, 3, 3))
-model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-
-model.add(Convolution2D(64, 3, 3))
-model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-
-model.add(Flatten()) 
-#model.add(Flatten(input_shape=(imsize,imsize,3))) 
-
-model.add(Dense(100))
-model.add(Activation('relu'))
-# model.add(Dropout(0.2))
-# model.add(Dense(512))
-# model.add(Activation('relu'))
-# model.add(Dropout(0.2))
-# model.add(Dense(2))
-# model.add(Activation('softmax'))
-
-model.add(Dense(1))
-model.add(Activation('sigmoid'))
-
-
-
-model.summary()
-
-model.compile(loss='binary_crossentropy',
-              optimizer=RMSprop(),
-              metrics=['accuracy'])
-
-history = model.fit_generator(train_generator,
-                    samples_per_epoch=batch_size*20, nb_epoch=nb_epoch,
-                              verbose=1)
-# history = model.fit_generator(train_generator,
-#                     samples_per_epoch=batch_size, nb_epoch=nb_epoch,
-#                               verbose=1, validation_data=train_generator,nb_val_samples=batch_size)
-score = model.evaluate_generator(valid_generator,validationSamples, verbose=1)
-
-print('Test score:', score[0])
-print('Test accuracy:', score[1])
-#model.save('keras_image.h5')
+                    #model.save('keras_image.h5')
+                    results.append([augmentation,nhid,dropout,actfunc,history.history['acc'][-1],score[1]])
+                    restitle='results%d' %e
+                    print(restitle)
+                    
+                    io.savemat(fout,{restitle: results[-1]})
+                    e+=1
+#print(results)
