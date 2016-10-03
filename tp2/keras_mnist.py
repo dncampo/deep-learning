@@ -38,19 +38,6 @@ Y_test = np_utils.to_categorical(y_test, nb_classes)
 model = Sequential()
 
 # Original =======================================
-<<<<<<< HEAD
-# model.add(Dense(512, input_shape=(784,)))
-# model.add(Activation('relu'))
-# model.add(Dropout(0.2))
-# model.add(Dense(512))
-# model.add(Activation('relu'))
-# model.add(Dropout(0.2))
-# model.add(Dense(10))
-# model.add(Activation('softmax'))
-# ================================================
-# mod ii =========================================
-=======
->>>>>>> c3a0e4781a6f0892fcc82e5bb98ec08ddab7dce4
 # model.add(Dense(512, input_shape=(784,)))
 # model.add(Activation('relu'))
 # model.add(Dropout(0.2))
@@ -100,12 +87,12 @@ model.compile(loss='categorical_crossentropy',
               optimizer=RMSprop(),
               metrics=['accuracy'])
 # mod i ==========================================
-N=X_train.shape[0]
-ind=np.array(range(0,N))
-np.random.shuffle(ind)
-trainind=ind[:round(N*trainSizeRatio)]
-X_train=X_train[trainind,:]
-Y_train=Y_train[trainind,:]
+# N=X_train.shape[0]
+# ind=np.array(range(0,N))
+# np.random.shuffle(ind)
+# trainind=ind[:round(N*trainSizeRatio)]
+# X_train=X_train[trainind,:]
+# Y_train=Y_train[trainind,:]
 # ================================================
 
 history = model.fit(X_train, Y_train,
