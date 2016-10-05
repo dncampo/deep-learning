@@ -99,3 +99,6 @@ for augmentation in augmentationv[::-1]:
                     e+=1
 #print(results)
 print('Total time: %0.2fh (expected %0.2fh)',etime/3600,firstEta)
+
+from keras.utils.visualize_util import plot
+plot(model, show_shapes=True,to_file='model.png')
