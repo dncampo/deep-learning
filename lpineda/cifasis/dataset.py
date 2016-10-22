@@ -111,10 +111,10 @@ def read_dataset(path_list, max_width, max_height, transformation='clamp'):
 
     n_images = len(path_list)
     vector_len = max_width*max_height*3 # RGB 3 channels
-    print("Each image has {0} values.".format(max_width*max_height*3))
-    print("Each pixel has 64 bits so each image is {0} bits.".format(max_width*max_height*3*64))
-    print("So each image has {0:.2f} mb.".format(max_width*max_height*3.0*64/8/2**20))
-    print("The hole dataset is {0:.2f} gb.".format((max_width*max_height*3.0*64*len(path_list)/8/(2**30))))
+    # print("Each image has {0} values.".format(max_width*max_height*3))
+    # print("Each pixel has 64 bits so each image is {0} bits.".format(max_width*max_height*3*64))
+    # print("So each image has {0:.2f} mb.".format(max_width*max_height*3.0*64/8/2**20))
+    # print("The hole dataset is {0:.2f} gb.".format((max_width*max_height*3.0*64*len(path_list)/8/(2**30))))
     try:    
         dataset = np.zeros((n_images, vector_len)) 
     except MemoryError:

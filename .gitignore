@@ -101,4 +101,5 @@ ENV/
 **/*.blg
 **/*.xml
 **/*.out
+**/*.tex~
 101_ObjectCategories

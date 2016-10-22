@@ -81,13 +81,13 @@ test_error = []
 epoch = 0
 max_epoch = 500
 
-queue = range(50)
+queue = list(range(50))
 
 print("Training started")
 while epoch < max_epoch and np.var(queue)>10e-10:
     epoch += 1
     #Training phase
-    sys.stdout.write(str(epoch) + " ")
+    print("Epoch " + str(epoch) + " of " + str(max_epoch))
     for batch in get_mini_batches((data_train, labels_train), size=64):
         pred, err = train(batch[0], batch[1])
 #    pred, err = train(data_train, labels_train)
