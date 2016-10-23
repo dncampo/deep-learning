@@ -6,6 +6,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{hyperref}
+\usepackage[top=1in, bottom=1.25in, left=1.25in, right=1in]{geometry}
 
 \begin{document}
 
@@ -36,6 +37,109 @@ Finalmente, para la tercera parte de este ejercicio se debe agregar al model una
 	\caption{Error de train y test de modelo con capa oculta de 100 neuronas}
 	\label{ex1b3}
 \end{figure}
+
+
 \subsection*{Ejercicio 2}
 
+En la figura \ref{fig:keras_example_history} se muestra la evolución del entrenamiento de la red neuronal con el dataset completo de $60000$ ejemplos.
+El modelo está compuesto por dos capas de 512 neuronas, un dropout de $0.2$ y activación ReLU, y una capa de salida de 10 neuronas y activación softmax.
+
+\begin{figure}[htpb]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../keras_example_acc.png}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../keras_example_loss.png}
+\end{minipage}
+\caption{Ejemplo de Redes Neuronales de Keras con todos los patrones}
+\label{fig:keras_example_history}
+\end{figure}
+
+En la figura \ref{fig:ex2a1} se muestra la evolución del entrenamiento de la red neuronal con el 25\% de los ejemplos del dataset y la misma red neuronal. En este caso la precisión del model bajo un 2\% respecto del entrenado con el dataset completo. \par
+
+\begin{figure}[tpb]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../ex2a1_acc.png}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../ex2a1_loss.png}
+\end{minipage}
+\caption{Utilizando el 25\% de los datos para entrenamiento}
+\label{fig:ex2a1}
+\end{figure}
+
+En la figura \ref{fig:ex2a2} se muestra la evolución del entrenamiento de la red neuronal con el 25\% de los ejemplos del dataset y una red neuronal con una sola capa de 512 neuronas con activación ReLU y dropout de $0.2$. 
+
+\begin{figure}[tpb]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../ex2a2_acc.png}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../ex2a2_loss.png}
+\end{minipage}
+\caption{Utilizando solo una capa con activación ReLU}
+\label{fig:ex2a2}
+\end{figure}
+
+En la figura \ref{fig:ex2a3} se muestra la evolución del entrenamiento de la red neuronal con el 25\% de los ejemplos del dataset y una red neuronal con una sola capa de 512 neuronas con activación sigmoidea y dropout de $0.2$. 
+
+\begin{figure}[tpb]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../ex2a3_acc.png}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../ex2a3_loss.png}
+\end{minipage}
+\caption{Utilizando solo una capa con activación sigmoidea}
+\label{fig:ex2a3}
+\end{figure}
+
+En la figura \ref{fig:ex2a4} se muestra la evolución del entrenamiento de la red neuronal con el 25\% de los ejemplos del dataset y una red neuronal con una sola capa de 512 neuronas con activación sigmoidea y dropout de $0.5$. 
+
+
+\begin{figure}[tpb]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../ex2a4_acc.png}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../ex2a4_loss.png}
+\end{minipage}
+\caption{Utilizando solo una capa con activación sigmoidea y dropout de 0.5}
+\label{fig:ex2a4}
+\end{figure}
+
+En la figura \ref{fig:ex2a5} se muestra la evolución del entrenamiento de la red neuronal con el 25\% de los ejemplos del dataset y una red neuronal con una sola capa de 512 neuronas con activación sigmoidea. 
+
+\begin{figure}[tpb]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../ex2a5_acc.png}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{../ex2a5_loss.png}
+\end{minipage}
+\caption{Utilizando solo una capa con activación sigmoidea pero sin dropout}
+\label{fig:ex2a5}
+\end{figure}
+
+\paragraph{Trabajo práctico 1} Las funciones del ejercicio (b) implementadas con primitivas de Keras pueden encontrarse en el repositorio GitHub.
+
+Finalmente, el formato h5 permite salvar el modelo entrenado usando un formato que soporta una cantidad ilimitada de tipos de datos. De esta forma, podemos distribuir en un archivo un modelo entrenado, sin necesidad de recalcularlo, o guardar modelos intermedios en las distintas épocas de entrenamiento.
 \end{document}
