@@ -14,6 +14,7 @@ from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
 from keras.optimizers import SGD, Adam, RMSprop
 from keras.utils import np_utils
+from plot_keras_history import plot_keras_history
 
 
 batch_size = 128
@@ -23,7 +24,7 @@ nb_epoch = 20
 # the data, shuffled and split between train and test sets
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
-rnd_idx = range(60000)
+rnd_idx = list(range(60000))
 np.random.shuffle(rnd_idx)
 rnd_idx = rnd_idx[0:int(60000*.25)]
 
@@ -72,3 +73,5 @@ text_file = open('ex2a2.txt','w')
 text_file.write('Test score:' + str(score[0]))
 text_file.write('\nTest accuracy:' + str(score[1]))
 text_file.close()
+
+plot_keras_history(history,"ex2a2")
